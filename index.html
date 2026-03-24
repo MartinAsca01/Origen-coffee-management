@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Origen — Gestión de Café</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ── THEME SYSTEM ─────────────────────────────────────────────── */
+  :root {
+    /* Brand colors — fixed across themes */
+    /* Claude Code palette: copper orange + warm grays */
+    --primary: #D4733A;       /* cobre — naranja Claude Code */
+    --primary-hover: #E8824A;
+    --secondary: #C15F3C;     /* naranja oscuro — acento secundario */
+    --secondary-hover: #D4733A;
+    --ok: #4A9E6B;
+
+    /* Light theme (default) */
+    --bg: #F2EDE8;            /* gris cálido muy claro */
+    --surface: #FAFAF8;       /* casi blanco cálido */
+    --surface2: #EDE8E2;      /* gris medio cálido */
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --text: #1A1614;          /* casi negro cálido */
+    --text-secondary: rgba(26,22,20,0.6);
+    --text-muted: rgba(26,22,20,0.38);
+    --header-bg: rgba(242,237,232,0.97);
+    --modal-bg: #FAFAF8;
+    --input-bg: rgba(0,0,0,0.04);
+    --input-focus: rgba(212,115,58,0.1);
+    --shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05);
+
+    /* Semantic */
+    --accent: var(--primary);
+    --accent-hover: var(--primary-hover);
+    --cta: var(--primary);
+    --cta-hover: var(--primary-hover);
+    --alert: var(--primary);
+    --rest-color: var(--secondary);
+    --use-color: var(--ok);
+    --sub-color: var(--primary);
+  }
+
+  [data-theme="dark"] {
+    /* Claude Code dark: warm dark grays, NOT pure black */
+    --bg: #1A1714;            /* gris muy oscuro cálido */
+    --surface: #242018;       /* superficie oscura */
+    --surface2: #2E2A24;      /* superficie secundaria */
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.14);
+    --text: #F0EAE2;          /* blanco cálido — como crema */
+    --text-secondary: rgba(240,234,226,0.62);
+    --text-muted: rgba(240,234,226,0.38);
+    --header-bg: rgba(26,23,20,0.97);
+    --modal-bg: #1E1B16;
+    --input-bg: rgba(255,255,255,0.06);
+    --input-focus: rgba(212,115,58,0.12);
+    --shadow: 0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.4);
+    --ok: #5BBF82;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+  /* Exclude transitions on elements where it causes issues */
+  input, textarea, select, button { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  header {
+    padding: 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .brand h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+  }
+
+  .brand span {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-val { font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 600; color: var(--text); display: block; }
+  .stat-val.has-alert { color: #D73C2C !important; }
+
+  .stat-lbl {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  main {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 3rem 3rem;
+  }
+
+  /* ALERTS */
+  #alerts-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .alert-card {
+    background: rgba(212,115,58,0.08);
+    border: 1px solid rgba(212,115,58,0.25);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: slideIn 0.4s ease;
+  }
+
+  .alert-card.ok {
+    background: rgba(76,175,125,0.08);
+    border-color: rgba(76,175,125,0.3);
+    border-left-color: var(--ok);
+  }
+
+  .alert-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+
+  .alert-card.ok .alert-dot { background: var(--ok); animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .alert-text { font-size: 0.875rem; color: var(--text); }
+  .alert-text strong { color: var(--accent); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .section-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* PIPELINE VIEW */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .pipeline-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+
+  .pipeline-col-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pipeline-icon {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .col-reposo .pipeline-icon { background: rgba(193,95,60,0.12); }
+  .col-uso .pipeline-icon { background: rgba(74,158,107,0.12); }
+  .col-subproducto .pipeline-icon { background: rgba(212,115,58,0.12); }
+
+  .pipeline-col-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+  }
+
+  .pipeline-col-count {
+    margin-left: auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--surface2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    color: var(--text-muted);
+  }
+
+  /* COFFEE CARD */
+  .coffee-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .coffee-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .col-reposo .coffee-card::before { background: var(--accent); }
+  .col-uso .coffee-card::before { background: var(--ok); }
+  .col-subproducto .coffee-card::before { background: var(--primary); }
+
+  .coffee-card:hover {
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+  }
+
+  .coffee-card.urgent {
+    border-color: rgba(212,115,58,0.3);
+    background: rgba(212,115,58,0.05);
+  }
+
+  .coffee-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+  }
+
+  .coffee-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .coffee-origin {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .coffee-badge {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .badge-ok { background: rgba(74,158,107,0.12); color: #2E7A50; }
+  .badge-warn { background: rgba(227,181,5,0.15); color: #9A7800; }
+  .badge-urgent { background: rgba(212,115,58,0.12); color: #A84020; }
+
+  [data-theme="dark"] .badge-ok { color: #5BBF82; }
+  [data-theme="dark"] .badge-warn { color: #E8A060; }
+  [data-theme="dark"] .badge-urgent { color: #E8824A; }
+
+  .coffee-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+  }
+
+  .coffee-meta-item {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  .coffee-meta-item span {
+    color: var(--text-secondary);
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  /* PROGRESS BAR */
+  .time-bar {
+    margin-top: 0.75rem;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .time-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .col-reposo .time-bar-fill { background: var(--primary); }
+  .col-uso .time-bar-fill { background: var(--ok); }
+  .col-subproducto .time-bar-fill { background: var(--primary); }
+
+  .time-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* FORM & BUTTONS */
+  .btn-primary {
+    background: var(--primary);
+    color: #FFFFFF;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-secondary:hover { border-color: var(--border-strong); background: var(--surface2); }
+
+  .btn-export {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid rgba(212,115,58,0.35);
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-export:hover { background: rgba(212,115,58,0.08); border-color: rgba(212,115,58,0.6); }
+
+  .btn-import {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-import:hover { background: var(--surface2); border-color: var(--border-strong); color: var(--text); }
+
+  .backup-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 0.65rem 3rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .backup-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-right: auto;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--surface);
+    border: 1px solid rgba(212,115,58,0.3);
+    border-radius: 10px;
+    padding: 0.9rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--primary);
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    box-shadow: var(--shadow);
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid rgba(212,115,58,0.3);
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-danger:hover { background: rgba(212,115,58,0.1); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--modal-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 500px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  /* TYPE GRID */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .type-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+  }
+  .type-option:hover { background: var(--surface2); border-color: var(--border-strong); }
+  .type-option.selected { background: rgba(212,115,58,0.07); border-color: rgba(212,115,58,0.4); }
+
+  .type-option-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .type-option-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .type-option-window {
+    margin-top: 0.6rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .selected-type-bar {
+    background: rgba(212,115,58,0.06);
+    border: 1px solid rgba(212,115,58,0.2);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .type-hint {
+    margin-top: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    border-left: 2px solid var(--border-strong);
+  }
+
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.75rem;
+  }
+
+  .form-group { margin-bottom: 1.25rem; }
+
+  label {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    background: var(--input-focus);
+  }
+  select option { background: var(--modal-bg); }
+  textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .modal-actions { display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end; }
+
+  /* HISTORY TABLE */
+  .history-section { margin-top: 3rem; }
+
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .history-table th {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: middle;
+  }
+  .history-table tr:hover td { background: var(--surface2); }
+
+  .stage-pill {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .pill-reposo { background: rgba(193,95,60,0.1); color: #8A3A18; }
+  .pill-uso { background: rgba(74,158,107,0.1); color: #1A6040; }
+  .pill-subproducto { background: rgba(212,115,58,0.12); color: #923010; }
+  .pill-completado { background: var(--border); color: var(--text-muted); }
+
+  [data-theme="dark"] .pill-reposo { color: #E8A060; background: rgba(212,115,58,0.15); }
+  [data-theme="dark"] .pill-uso { color: #5BBF82; background: rgba(91,191,130,0.12); }
+  [data-theme="dark"] .pill-subproducto { color: #E8824A; background: rgba(212,115,58,0.15); }
+  [data-theme="dark"] .pill-completado { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+
+  /* ADVANCE BUTTON */
+  .advance-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    margin-right: 0.3rem;
+  }
+  .advance-btn.to-uso { background: rgba(74,158,107,0.1); color: #1A6040; }
+  .advance-btn.to-uso:hover { background: rgba(76,175,125,0.3); }
+  .advance-btn.to-sub { background: rgba(212,115,58,0.1); color: #8A3010; }
+  .advance-btn.to-sub:hover { background: rgba(250,134,94,0.3); }
+  .advance-btn.to-done { background: var(--border); color: var(--text-muted); }
+  .advance-btn.to-done:hover { background: var(--border-strong); }
+
+
+  [data-theme="dark"] .advance-btn.to-uso { background: rgba(91,191,130,0.12); color: #5BBF82; }
+  [data-theme="dark"] .advance-btn.to-sub { color: #E8824A; background: rgba(212,115,58,0.15); }
+
+  .actions-cell { white-space: nowrap; }
+
+  /* Detail modal */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .detail-item label { font-size: 0.65rem; }
+  .detail-val { font-size: 0.95rem; font-weight: 500; color: var(--text); }
+
+  .notes-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .timeline-dots { display: flex; align-items: center; gap: 0; margin-bottom: 1.5rem; }
+
+  .timeline-step { flex: 1; text-align: center; position: relative; }
+  .timeline-step::before {
+    content: '';
+    position: absolute;
+    top: 12px; left: 50%; right: -50%;
+    height: 1px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .timeline-step:last-child::before { display: none; }
+
+  .timeline-dot {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    margin: 0 auto 0.5rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 600;
+    position: relative; z-index: 1;
+    background: var(--modal-bg);
+  }
+  .timeline-dot.active { border-color: var(--primary); color: var(--primary); background: rgba(212,115,58,0.08); }
+  .timeline-dot.done { border-color: var(--ok); background: rgba(74,158,107,0.1); color: var(--ok); }
+  [data-theme="dark"] .timeline-dot.done { color: #4CAF7D; }
+
+  .timeline-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .timeline-date { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+  }
+  .empty-state .empty-icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.2; }
+
+  /* THEME TOGGLE */
+  .theme-toggle {
+    background: var(--surface2);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+  }
+  .theme-toggle:hover { border-color: var(--primary); background: rgba(250,134,94,0.07); }
+
+  /* Light theme specific overrides */
+  :root .alert-card { border-left-color: var(--primary); }
+  :root .col-reposo .pipeline-icon { background: rgba(227,181,5,0.12); }
+  :root .col-uso .pipeline-icon { background: rgba(46,158,107,0.12); }
+  :root .col-subproducto .pipeline-icon { background: rgba(212,115,58,0.1); }
+  :root .col-reposo .coffee-card::before { background: var(--secondary); }
+  :root .col-uso .coffee-card::before { background: var(--ok); }
+  :root .col-subproducto .coffee-card::before { background: var(--primary); }
+
+  /* ── RESPONSIVE ───────────────────────────────────────────────── */
+
+  /* Tablet landscape: 1024px */
+  @media (max-width: 1024px) {
+    main { padding: 2rem 2rem; }
+    header { padding: 1.25rem 2rem; }
+    .backup-bar { padding: 0.65rem 2rem; }
+    .brand h1 { font-size: 1.5rem; }
+    .header-stats { gap: 1.5rem; }
+    .stat-val { font-size: 1.2rem; }
+  }
+
+  /* Tablet portrait: 768px — iPad main breakpoint */
+  @media (max-width: 900px) {
+    header {
+      padding: 1rem 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .brand { flex: 1; }
+    .brand h1 { font-size: 1.4rem; }
+    .header-stats {
+      width: 100%;
+      justify-content: flex-start;
+      gap: 1.5rem;
+      padding-top: 0.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat { text-align: left; }
+    .stat-val { font-size: 1.1rem; }
+    .stat-lbl { font-size: 0.62rem; }
+
+    .backup-bar {
+      padding: 0.6rem 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .backup-label { width: 100%; font-size: 0.65rem; }
+
+    main { padding: 1.5rem 1.25rem; }
+
+    /* Pipeline: 2 cols on tablet, cards don't collapse to 1 */
+    .pipeline {
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    /* Subproducto full width below */
+    .pipeline .col-subproducto {
+      grid-column: 1 / -1;
+    }
+    /* Subproducto in full width shows cards in 2 cols */
+    .col-subproducto #col-sub-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .col-subproducto #col-sub-cards .coffee-card {
+      margin-bottom: 0;
+    }
+
+    /* Section header stacks on small tablet */
+    .section-header { flex-wrap: wrap; gap: 0.75rem; }
+    .section-title { font-size: 1.2rem; }
+
+    /* History table: scroll horizontally */
+    .history-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .history-table { min-width: 600px; }
+
+    /* Form */
+    .form-row { grid-template-columns: 1fr 1fr; }
+    .modal { padding: 1.75rem 1.5rem; width: 95vw; }
+    .type-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Small tablet / large phone: 640px */
+  @media (max-width: 640px) {
+    header { padding: 0.9rem 1rem; }
+    .backup-bar { padding: 0.6rem 1rem; }
+    main { padding: 1.25rem 1rem; }
+
+    /* Pipeline single column */
+    .pipeline { grid-template-columns: 1fr; }
+    .pipeline .col-subproducto { grid-column: 1; }
+    .col-subproducto #col-sub-cards {
+      display: block;
+    }
+    .col-subproducto #col-sub-cards .coffee-card {
+      margin-bottom: 0.75rem;
+    }
+
+    /* Tighter stats row */
+    .header-stats { gap: 1rem; }
+    .stat-val { font-size: 1rem; }
+
+    /* Form single column */
+    .form-row { grid-template-columns: 1fr; }
+    .type-grid { grid-template-columns: 1fr; }
+
+    /* Modal full width */
+    .modal {
+      width: 100vw;
+      max-height: 95vh;
+      border-radius: 16px 16px 0 0;
+      padding: 1.5rem 1.25rem;
+      position: fixed;
+      bottom: 0;
+      margin: 0;
+    }
+    .modal-overlay {
+      align-items: flex-end;
+    }
+
+    /* History compact */
+    .history-table { min-width: 520px; }
+    .history-table th, .history-table td { padding: 0.7rem 0.75rem; }
+
+    /* Backup bar: import/export stack */
+    .btn-import, .btn-export { font-size: 0.7rem; padding: 0.4rem 0.8rem; }
+  }
+
+  /* ── GROUPED CARDS ───────────────────────────────────────────── */
+  .group-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    gap: 0.75rem;
+    transition: background 0.15s;
+  }
+  .group-header:hover { background: var(--surface2); }
+  .group-header-left { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+  .group-name { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+  .group-meta { font-size: 0.7rem; color: var(--text-muted); }
+  .group-header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .group-summary-badge {
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .group-summary-badge.has-urgent { background: rgba(211,60,44,0.15); color: #D73C2C; border: 1px solid rgba(211,60,44,0.25); }
+  .group-summary-badge.has-warn { background: rgba(212,115,58,0.15); color: var(--primary); border: 1px solid rgba(212,115,58,0.25); }
+  .group-summary-badge.ok { background: rgba(74,158,107,0.12); color: var(--ok); border: 1px solid rgba(74,158,107,0.2); }
+  .group-chevron { font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s; }
+  .group-chevron.open { transform: rotate(180deg); }
+  .group-lots { display: none; border-top: 1px solid var(--border); }
+  .group-lots.open { display: block; }
+  .group-lots .coffee-card {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    box-shadow: none;
+  }
+  .group-lots .coffee-card:last-child { border-bottom: none; }
+
+  .stat-divider { border-left: 1px solid var(--border); padding-left: 1rem; margin-left: 0.25rem; }
+  @media (max-width: 900px) { .stat-divider { border-left: none; padding-left: 0; margin-left: 0; } }
+</style>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>Origen</h1>
+    <span id="brand-subtitle"></span>
+  </div>
+  <div style="display:flex;align-items:center;gap:1.5rem">
+    <div class="header-stats">
+      <div class="stat">
+        <span class="stat-val" id="stat-total">0</span>
+        <span class="stat-lbl" id="lbl-active-lots"></span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" id="stat-alerts">0</span>
+        <span class="stat-lbl" id="lbl-alerts"></span>
+      </div>
+      <div class="stat stat-divider">
+        <span class="stat-val" id="stat-retail">0</span>
+        <span class="stat-lbl" id="lbl-stat-retail"></span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" id="stat-aromas-bags">0</span>
+        <span class="stat-lbl" id="lbl-stat-aromas-bags"></span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" id="stat-aromas-tins">0</span>
+        <span class="stat-lbl" id="lbl-stat-aromas-tins"></span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" id="stat-seasonal">0</span>
+        <span class="stat-lbl" id="lbl-stat-seasonal"></span>
+      </div>
+    </div>
+    <select id="lang-selector" onchange="setLang(this.value)" style="background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;font-size:0.75rem;cursor:pointer;font-family:'Inter',sans-serif">
+      <option value="en">🇬🇧 EN</option>
+      <option value="es">🇪🇸 ES</option>
+      <option value="da">🇩🇰 DA</option>
+      <option value="pt">🇧🇷 PT</option>
+    </select>
+  </div>
+</header>
+
+<div class="backup-bar">
+  <span class="backup-label" id="backup-label">—</span>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+    <span id="theme-icon">☀️</span>
+  </button>
+  <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)" />
+  <button class="btn-import" id="btn-import" onclick="document.getElementById('import-file').click()"></button>
+  <button class="btn-export" id="btn-export" onclick="exportData()"></button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<main>
+  <!-- ALERTS -->
+  <div id="alerts-section"></div>
+
+  <!-- PIPELINE -->
+  <div class="section-header">
+    <h2 class="section-title" id="section-pipeline"></h2>
+    <button class="btn-primary" id="btn-register" onclick="openAddModal()"></button>
+  </div>
+
+  <div class="pipeline">
+    <div class="pipeline-col col-reposo">
+      <div class="pipeline-col-header">
+        <div class="pipeline-icon">☕</div>
+        <div>
+          <div class="pipeline-col-name" id="col-name-reposo"></div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px" id="sub-reposo"></div>
+        </div>
+        <div class="pipeline-col-count" id="count-reposo">0</div>
+      </div>
+      <div id="col-reposo-cards"></div>
+    </div>
+    <div class="pipeline-col col-uso">
+      <div class="pipeline-col-header">
+        <div class="pipeline-icon">🟢</div>
+        <div>
+          <div class="pipeline-col-name" id="col-name-uso"></div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px" id="sub-uso"></div>
+        </div>
+        <div class="pipeline-col-count" id="count-uso">0</div>
+      </div>
+      <div id="col-uso-cards"></div>
+    </div>
+    <div class="pipeline-col col-subproducto">
+      <div class="pipeline-col-header">
+        <div class="pipeline-icon">♻️</div>
+        <div>
+          <div class="pipeline-col-name" id="col-name-sub"></div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px" id="sub-sub"></div>
+        </div>
+        <div class="pipeline-col-count" id="count-sub">0</div>
+      </div>
+      <div id="col-sub-cards"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section">
+    <div class="section-header">
+      <h2 class="section-title" id="section-history"></h2>
+      <span class="section-sub" id="history-count">— lotes registrados</span>
+    </div>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th id="th-strain"></th>
+          <th id="th-type"></th>
+          <th id="th-qty"></th>
+          <th id="th-roast"></th>
+          <th id="th-bb"></th>
+          <th id="th-stage"></th>
+          <th id="th-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="history-body"></tbody>
+    </table>
+    <div id="history-empty" class="empty-state" style="display:none">
+      <div id="empty-history-text"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h2 id="modal-add-title"></h2>
+
+    <!-- STEP 1: TYPE SELECTOR -->
+    <div id="form-step-1">
+      <div class="form-group">
+        <label id="lbl-product-type"></label>
+        <div class="type-grid" id="type-grid"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: FIELDS -->
+    <div id="form-step-2" style="display:none">
+      <div class="selected-type-bar" id="selected-type-bar"></div>
+
+      <div class="form-group" id="f-name-group">
+        <label id="lbl-strain-name"></label>
+        <input type="text" id="f-name" placeholder="Ej: Geisha Washed, Bourbon Natural..." />
+      </div>
+      <div class="form-row" id="f-origin-row">
+        <div class="form-group">
+          <label id="lbl-country"></label>
+          <input type="text" id="f-origin" placeholder="Ej: Etiopía, Colombia..." />
+        </div>
+        <div class="form-group">
+          <label id="lbl-reception-date"></label>
+          <input type="date" id="f-purchase-date" />
+        </div>
+      </div>
+      <div class="form-group" id="f-purchase-date-solo" style="display:none">
+        <label id="lbl-reception-date-2"></label>
+        <input type="date" id="f-purchase-date-2" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-roast-date"></label>
+          <input type="date" id="f-roast-date" />
+        </div>
+        <div class="form-group">
+          <label id="lbl-bb-date"></label>
+          <input type="date" id="f-bb-date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label id="lbl-quantity"></label>
+          <div style="display:flex;gap:0.5rem">
+            <select id="f-unit" style="width:auto;flex-shrink:0;min-width:110px">
+              <option value="unidades" id="opt-units"></option>
+              <option value="kg">Kg</option>
+            </select>
+            <input type="number" id="f-qty" min="0.1" step="0.1" placeholder="0" style="flex:1" />
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="lbl-supplier"></label>
+        <input type="text" id="f-supplier" placeholder="Nombre del proveedor" />
+      </div>
+      <div class="form-group">
+        <label id="lbl-tasting-notes"></label>
+        <textarea id="f-notes" placeholder="Aromas, acidez, cuerpo, dulzura..."></textarea>
+      </div>
+      <div class="form-group" id="f-overstock-group" style="display:none">
+        <label id="lbl-overstock"></label>
+        <select id="f-overstock-action">
+          <option value="adjust_order" id="opt-adjust-order"></option>
+          <option value="espresso" id="opt-espresso"></option>
+          <option value="contact" id="opt-contact"></option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modal-back-btn" onclick="formBack()" style="display:none"></button>
+      <button class="btn-secondary" id="btn-cancel-modal" onclick="closeModal('add-modal')"></button>
+      <button class="btn-primary" id="modal-next-btn" onclick="addLote()" style="display:none">/button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <h2 id="dm-title">—</h2>
+    <div class="timeline-dots" id="dm-timeline"></div>
+    <div class="detail-grid" id="dm-grid"></div>
+    <div class="notes-box" id="dm-notes"></div>
+    <div id="dm-sell-section" style="margin:0.75rem 0;display:none">
+      <div style="display:flex;align-items:center;gap:0.5rem;background:var(--surface2);padding:0.75rem;border-radius:8px">
+        <label id="lbl-sell-qty" style="font-size:0.8rem;color:var(--text-secondary);white-space:nowrap"></label>
+        <input type="number" id="dm-sell-qty" min="1" step="1" style="width:80px;flex-shrink:0" placeholder="0"/>
+        <button class="btn-primary" id="dm-sell-confirm" style="font-size:0.78rem;padding:0.4rem 0.8rem;white-space:nowrap"></button>
+        <button class="btn-secondary" onclick="toggleSellSection(false)" style="font-size:0.78rem;padding:0.4rem 0.8rem"></button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="dm-delete-btn"></button>
+      <button class="btn-primary" id="dm-sell-btn" style="background:var(--ok);border-color:var(--ok)"></button>
+      <button class="btn-secondary" id="dm-edit-btn"></button>
+      <button class="btn-secondary" id="btn-close-detail" onclick="closeModal('detail-modal')"></button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // ── I18N ─────────────────────────────────────────────────────
+  const TRANSLATIONS = {
+    en: {
+      brandSubtitle: 'coffee management', activeLotsLabel: 'Active lots', alertsLabel: 'Alerts',
+      importBtn: '↑ Import backup', exportBtn: '↓ Export backup',
+      sectionPipeline: 'Maturation Pipeline', btnRegister: '+ Register Lot',
+      colReposo: 'Resting', colUso: 'Available for Use', colSub: 'By-product',
+      colResoSubtitle: '3 weeks', colUsoSubtitle: '3 weeks', colSubSubtitle: 'Removed from sale',
+      sectionHistory: 'Lot History',
+      thStrain: 'Variety / Origin', thType: 'Type', thQty: 'Quantity', thRoast: 'Roast date', thBb: 'BB date', thStage: 'Stage', thActions: 'Actions',
+      modalAddTitle: 'Register New Lot', lblProductType: 'Product type', lblStrainName: 'Variety / strain name',
+      lblCountry: 'Country / Origin', lblReceptionDate: 'Reception date', lblRoastDate: 'Roast date',
+      lblBbDate: 'Best Before (BB date)', lblQuantity: 'Quantity', lblSupplier: 'Supplier',
+      lblTastingNotes: 'Tasting notes', lblOverstock: 'Action if overstock',
+      optAdjustOrder: 'Adjust weekly order', optEspresso: 'Use for espresso', optContact: 'Contact supplier', optUnits: 'Units',
+      btnBack: '← Back', btnCancel: 'Cancel', btnRegisterLot: 'Register Lot', btnRegisterIngreso: 'Register Intake',
+      btnSaveChanges: 'Save changes', btnDeleteLot: 'Delete lot', btnEdit: 'Edit', btnClose: 'Close',
+      emptyHistory: 'No lots registered yet', emptyReposo: 'No lots resting', emptyUso: 'No lots available', emptySub: 'No lots as by-product',
+      stageReposo: 'Resting', stageUso: 'In use', stageSub: 'By-product', stageDone: 'Completed',
+      detailType: 'Type', detailOrigin: 'Origin', detailSupplier: 'Supplier', detailQty: 'Quantity',
+      detailReception: 'Reception date', detailRoast: 'Roast date', detailBb: 'BB date', detailRule: 'Usage rule',
+      detailNoNotes: 'No tasting notes recorded.',
+      cardQty: 'Quantity', cardRoast: 'Roast', cardBbDate: 'BB Date', unitU: 'u', unitKg: 'kg', groupLots: 'lotes', statRetail: 'Retail', statAromasBags: 'Aromas Bags', statAromasTins: 'Aromas Tins', statSeasonal: 'Seasonal', groupLots: 'lots', cardDay: 'Day', cardInStage: 'in stage',
+      badgeDaysToUse: 'd to use', badgeDaysAvail: 'd available', badgeWithdrawSoon: 'd — withdraw soon', badgeByproduct: 'By-product',
+      alertReadyIn: 'ready for use in', alertDay: 'day', alertDays: 'days',
+      alertRemaining: 'remaining before withdrawing', alertOverstock: 'over 3 weeks from roast. Consider transferring to tin or adjusting order.',
+      historyCount1: 'lot registered', historyCountN: 'lots registered',
+      toastExported: '✓ Backup exported successfully', toastRestored: '✓ Data restored successfully',
+      toastUpdated: '✓ updated', toastRegistered: '✓ registered',
+      confirmDelete: 'Delete this lot?', confirmRestore: 'Restore', confirmRestoreFrom: 'lots from backup dated',
+      confirmRestoreReplace: '? This will replace current data.',
+      backupLast: 'last backup:', backupNone: 'no backup exported yet',
+      invalidBackup: 'The file is not a valid Origen backup.', invalidFormat: 'Invalid format',
+      validationName: 'Variety name is required', validationDates: 'Roast date and BB date are required',
+      btnSell: 'Register sale', lblSellQty: 'Units sold:', btnConfirmSale: 'Confirm', toastSoldOut: '✓ {name} — sold out, lot closed', toastSoldPartial: '✓ {n} units sold from {name} · {r} remaining', validationSellQty: 'Enter a valid quantity', validationSellMax: 'Cannot exceed available stock ({n})',
+      productTypes: {
+        retail_bags: { name: 'Retail Bags', desc: 'Direct sale to customer', window: 'Sell within 3 weeks of roast', hint: 'Sell within 3 weeks of roast. After 4 weeks, transfer to tin or Condibox.' },
+        aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'For filter — 1kg bags', window: 'Use between week 1–3 from roast', hint: 'Optimal window: 1 to 3 weeks from roast. Under 1 week → find compatible tin. After 3 weeks → use for espresso.' },
+        aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'For espresso — 4kg tins', window: 'Use from week 3 until BB date', hint: 'Do not use before 3 weeks from roast. Usage window: from week 3 until BB date. If approaching BB date → contact for recipe adjustment.' },
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Seasonal use — flexible', window: 'Use until BB date — flexible rest', hint: 'Flexible rest due to irregular use. Use until BB date with no fixed rest window.' }
+      }
+    },
+    es: {
+      brandSubtitle: 'gestión de café', activeLotsLabel: 'Lotes activos', alertsLabel: 'Alertas',
+      importBtn: '↑ Importar backup', exportBtn: '↓ Exportar backup',
+      sectionPipeline: 'Pipeline de Maduración', btnRegister: '+ Registrar Compra',
+      colReposo: 'En Reposo', colUso: 'Disponible para Uso', colSub: 'Subproducto',
+      colResoSubtitle: '3 semanas', colUsoSubtitle: '3 semanas', colSubSubtitle: 'Retirado de venta',
+      sectionHistory: 'Historial de Lotes',
+      thStrain: 'Cepa / Origen', thType: 'Tipo', thQty: 'Cantidad', thRoast: 'Roast date', thBb: 'BB date', thStage: 'Etapa', thActions: 'Acciones',
+      modalAddTitle: 'Registrar Nueva Compra', lblProductType: 'Tipo de producto', lblStrainName: 'Nombre de la cepa / variedad',
+      lblCountry: 'País / Origen', lblReceptionDate: 'Fecha recepción', lblRoastDate: 'Fecha de roast',
+      lblBbDate: 'Best Before (BB date)', lblQuantity: 'Cantidad', lblSupplier: 'Proveedor',
+      lblTastingNotes: 'Notas de cata', lblOverstock: 'Acción si hay overstock',
+      optAdjustOrder: 'Ajustar orden semanal', optEspresso: 'Usar para espresso', optContact: 'Contactar proveedor', optUnits: 'Unidades',
+      btnBack: '← Atrás', btnCancel: 'Cancelar', btnRegisterLot: 'Registrar Lote', btnRegisterIngreso: 'Registrar ingreso',
+      btnSaveChanges: 'Guardar cambios', btnDeleteLot: 'Eliminar lote', btnEdit: 'Editar', btnClose: 'Cerrar',
+      emptyHistory: 'Aún no hay lotes registrados', emptyReposo: 'Sin lotes en reposo', emptyUso: 'Sin lotes disponibles', emptySub: 'Sin lotes en subproducto',
+      stageReposo: 'Reposo', stageUso: 'En uso', stageSub: 'Subproducto', stageDone: 'Completado',
+      detailType: 'Tipo', detailOrigin: 'Origen', detailSupplier: 'Proveedor', detailQty: 'Cantidad',
+      detailReception: 'Fecha recepción', detailRoast: 'Roast date', detailBb: 'BB date', detailRule: 'Regla de uso',
+      detailNoNotes: 'Sin notas de cata registradas.',
+      cardQty: 'Cantidad', cardRoast: 'Roast', cardBbDate: 'BB date', unitU: 'u', unitKg: 'kg', cardDay: 'Día', cardInStage: 'en etapa',
+      badgeDaysToUse: 'd para usar', badgeDaysAvail: 'd disponibles', badgeWithdrawSoon: 'd — retirar pronto', badgeByproduct: 'Subproducto',
+      alertReadyIn: 'listo para uso en', alertDay: 'día', alertDays: 'días',
+      alertRemaining: 'quedan', alertRemainingBefore: 'antes de retirar', alertOverstock: 'más de 3 semanas del roast. Considerar transferir a tin o ajustar orden.',
+      historyCount1: 'lote registrado', historyCountN: 'lotes registrados',
+      toastExported: '✓ Backup exportado correctamente', toastRestored: '✓ Datos restaurados correctamente',
+      toastUpdated: '✓ actualizado', toastRegistered: '✓ registrado',
+      confirmDelete: '¿Eliminar este lote?', confirmRestore: '¿Restaurar', confirmRestoreFrom: 'lotes desde el backup del',
+      confirmRestoreReplace: '? Esto reemplazará los datos actuales.',
+      backupLast: 'último backup:', backupNone: 'sin backup exportado aún',
+      invalidBackup: 'El archivo no es un backup válido de Origen.', invalidFormat: 'Formato inválido',
+      validationName: 'El nombre de la cepa es obligatorio', validationDates: 'Fecha de roast y BB date son obligatorios',
+      btnSell: 'Registrar venta', lblSellQty: 'Unidades vendidas:', btnConfirmSale: 'Confirmar', toastSoldOut: '✓ {name} — agotado, lote cerrado', toastSoldPartial: '✓ {n} unidades vendidas de {name} · quedan {r}', validationSellQty: 'Ingresá una cantidad válida', validationSellMax: 'No puede superar el stock disponible ({n})',
+      productTypes: {
+        retail_bags: { name: 'Retail Bags', desc: 'Venta directa al cliente', window: 'Vender dentro de 3 semanas del roast', hint: 'Vender antes de 3 semanas del roast. Si pasan 4 semanas, transferir a tin o Condibox.' },
+        aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Para filter — bolsas 1kg', window: 'Usar entre semana 1–3 del roast', hint: 'Ventana óptima: 1 a 3 semanas del roast. Antes de 1 semana → buscar tin con fecha compatible. Después de 3 semanas → usar para espresso.' },
+        aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'Para espresso — tins 4kg', window: 'Usar desde semana 3 hasta BB date', hint: 'No usar antes de 3 semanas del roast. Ventana de uso: desde semana 3 hasta BB date. Si se acerca BB date → contactar para ajuste de receta.' },
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Uso estacional — flexible', window: 'Usar hasta BB date — reposo flexible', hint: 'Reposo flexible por uso irregular. Usar hasta BB date sin ventana fija de reposo.' }
+      }
+    },
+    da: {
+      brandSubtitle: 'kaffestyring', activeLotsLabel: 'Aktive partier', alertsLabel: 'Advarsler',
+      importBtn: '↑ Importer backup', exportBtn: '↓ Eksporter backup',
+      sectionPipeline: 'Modningstilstand', btnRegister: '+ Registrer parti',
+      colReposo: 'Hviler', colUso: 'Klar til brug', colSub: 'Biprodukt',
+      colResoSubtitle: '3 uger', colUsoSubtitle: '3 uger', colSubSubtitle: 'Trukket fra salg',
+      sectionHistory: 'Partihistorik',
+      thStrain: 'Sort / Oprindelse', thType: 'Type', thQty: 'Antal', thRoast: 'Ristningsdato', thBb: 'BB dato', thStage: 'Fase', thActions: 'Handlinger',
+      modalAddTitle: 'Registrer nyt parti', lblProductType: 'Produkttype', lblStrainName: 'Sort / varietetnavn',
+      lblCountry: 'Land / Oprindelse', lblReceptionDate: 'Modtagelsesdato', lblRoastDate: 'Ristningsdato',
+      lblBbDate: 'Bedst før (BB dato)', lblQuantity: 'Antal', lblSupplier: 'Leverandør',
+      lblTastingNotes: 'Smagnoter', lblOverstock: 'Handling ved overskud',
+      optAdjustOrder: 'Juster ugentlig ordre', optEspresso: 'Brug til espresso', optContact: 'Kontakt leverandør', optUnits: 'Enheder',
+      btnBack: '← Tilbage', btnCancel: 'Annuller', btnRegisterLot: 'Registrer parti', btnRegisterIngreso: 'Registrer modtagelse',
+      btnSaveChanges: 'Gem ændringer', btnDeleteLot: 'Slet parti', btnEdit: 'Rediger', btnClose: 'Luk',
+      emptyHistory: 'Ingen partier registreret endnu', emptyReposo: 'Ingen partier hviler', emptyUso: 'Ingen tilgængelige partier', emptySub: 'Ingen partier som biprodukt',
+      stageReposo: 'Hviler', stageUso: 'I brug', stageSub: 'Biprodukt', stageDone: 'Afsluttet',
+      detailType: 'Type', detailOrigin: 'Oprindelse', detailSupplier: 'Leverandør', detailQty: 'Antal',
+      detailReception: 'Modtagelsesdato', detailRoast: 'Ristningsdato', detailBb: 'BB dato', detailRule: 'Brugsregel',
+      detailNoNotes: 'Ingen smagnoter registreret.',
+      cardQty: 'Antal', cardRoast: 'Ristning', cardBbDate: 'BB dato', unitU: 'stk', unitKg: 'kg', groupLots: 'partier', statRetail: 'Retail', statAromasBags: 'Aromas Poser', statAromasTins: 'Aromas Dåser', statSeasonal: 'Sæson', cardDay: 'Dag', cardInStage: 'i fase',
+      badgeDaysToUse: 'd til brug', badgeDaysAvail: 'd tilgængelig', badgeWithdrawSoon: 'd — trækkes snart', badgeByproduct: 'Biprodukt',
+      alertReadyIn: 'klar til brug om', alertDay: 'dag', alertDays: 'dage',
+      alertRemaining: 'tilbage før tilbagetrækning', alertOverstock: 'over 3 uger fra ristning. Overvej overførsel til dåse eller juster ordre.',
+      historyCount1: 'parti registreret', historyCountN: 'partier registreret',
+      toastExported: '✓ Backup eksporteret', toastRestored: '✓ Data gendannet',
+      toastUpdated: '✓ opdateret', toastRegistered: '✓ registreret',
+      confirmDelete: 'Slet dette parti?', confirmRestore: 'Gendan', confirmRestoreFrom: 'partier fra backup dateret',
+      confirmRestoreReplace: '? Dette erstatter nuværende data.',
+      backupLast: 'seneste backup:', backupNone: 'ingen backup eksporteret endnu',
+      invalidBackup: 'Filen er ikke en gyldig Origen-backup.', invalidFormat: 'Ugyldigt format',
+      validationName: 'Varietetnavn er påkrævet', validationDates: 'Ristningsdato og BB dato er påkrævet',
+      btnSell: 'Registrer salg', lblSellQty: 'Solgte enheder:', btnConfirmSale: 'Bekræft', toastSoldOut: '✓ {name} — udsolgt, parti lukket', toastSoldPartial: '✓ {n} enheder solgt fra {name} · {r} tilbage', validationSellQty: 'Indtast en gyldig mængde', validationSellMax: 'Kan ikke overstige tilgængeligt lager ({n})',
+      productTypes: {
+        retail_bags: { name: 'Retail Bags', desc: 'Direkte salg til kunde', window: 'Sælg inden 3 uger fra ristning', hint: 'Sælg inden 3 uger fra ristning. Efter 4 uger, overfør til dåse eller Condibox.' },
+        aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Til filter — 1kg poser', window: 'Brug mellem uge 1–3 fra ristning', hint: 'Optimal vindue: 1 til 3 uger fra ristning. Under 1 uge → find kompatibel dåse. Efter 3 uger → brug til espresso.' },
+        aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'Til espresso — 4kg dåser', window: 'Brug fra uge 3 til BB dato', hint: 'Brug ikke før 3 uger fra ristning. Brugsvindue: fra uge 3 til BB dato. Nærmer BB dato sig → kontakt for receptjustering.' },
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Sæsonbrug — fleksibelt', window: 'Brug til BB dato — fleksibel hvile', hint: 'Fleksibel hvile pga. uregelmæssigt forbrug. Brug til BB dato uden fast hvilevindue.' }
+      }
+    },
+    pt: {
+      brandSubtitle: 'gestão de café', activeLotsLabel: 'Lotes ativos', alertsLabel: 'Alertas',
+      importBtn: '↑ Importar backup', exportBtn: '↓ Exportar backup',
+      sectionPipeline: 'Pipeline de Maturação', btnRegister: '+ Registrar Lote',
+      colReposo: 'Em Repouso', colUso: 'Disponível para Uso', colSub: 'Subproduto',
+      colResoSubtitle: '3 semanas', colUsoSubtitle: '3 semanas', colSubSubtitle: 'Retirado de venda',
+      sectionHistory: 'Histórico de Lotes',
+      thStrain: 'Variedade / Origem', thType: 'Tipo', thQty: 'Quantidade', thRoast: 'Data de torra', thBb: 'BB date', thStage: 'Etapa', thActions: 'Ações',
+      modalAddTitle: 'Registrar Novo Lote', lblProductType: 'Tipo de produto', lblStrainName: 'Nome da variedade / cepa',
+      lblCountry: 'País / Origem', lblReceptionDate: 'Data de recepção', lblRoastDate: 'Data de torra',
+      lblBbDate: 'Validade (BB date)', lblQuantity: 'Quantidade', lblSupplier: 'Fornecedor',
+      lblTastingNotes: 'Notas de degustação', lblOverstock: 'Ação em caso de excesso',
+      optAdjustOrder: 'Ajustar pedido semanal', optEspresso: 'Usar para espresso', optContact: 'Contatar fornecedor', optUnits: 'Unidades',
+      btnBack: '← Voltar', btnCancel: 'Cancelar', btnRegisterLot: 'Registrar Lote', btnRegisterIngreso: 'Registrar entrada',
+      btnSaveChanges: 'Salvar alterações', btnDeleteLot: 'Excluir lote', btnEdit: 'Editar', btnClose: 'Fechar',
+      emptyHistory: 'Nenhum lote registrado ainda', emptyReposo: 'Sem lotes em repouso', emptyUso: 'Sem lotes disponíveis', emptySub: 'Sem lotes como subproduto',
+      stageReposo: 'Repouso', stageUso: 'Em uso', stageSub: 'Subproduto', stageDone: 'Concluído',
+      detailType: 'Tipo', detailOrigin: 'Origem', detailSupplier: 'Fornecedor', detailQty: 'Quantidade',
+      detailReception: 'Data de recepção', detailRoast: 'Data de torra', detailBb: 'BB date', detailRule: 'Regra de uso',
+      detailNoNotes: 'Sem notas de degustação registradas.',
+      cardQty: 'Quantidade', cardRoast: 'Torra', cardBbDate: 'BB date', unitU: 'un', unitKg: 'kg', groupLots: 'lotes', statRetail: 'Retail', statAromasBags: 'Aromas Bags', statAromasTins: 'Aromas Latas', statSeasonal: 'Sazonal', cardDay: 'Dia', cardInStage: 'na etapa',
+      badgeDaysToUse: 'd para uso', badgeDaysAvail: 'd disponíveis', badgeWithdrawSoon: 'd — retirar em breve', badgeByproduct: 'Subproduto',
+      alertReadyIn: 'pronto para uso em', alertDay: 'dia', alertDays: 'dias',
+      alertRemaining: 'restam', alertRemainingBefore: 'antes de retirar', alertOverstock: 'mais de 3 semanas da torra. Considerar transferir para lata ou ajustar pedido.',
+      historyCount1: 'lote registrado', historyCountN: 'lotes registrados',
+      toastExported: '✓ Backup exportado com sucesso', toastRestored: '✓ Dados restaurados com sucesso',
+      toastUpdated: '✓ atualizado', toastRegistered: '✓ registrado',
+      confirmDelete: 'Excluir este lote?', confirmRestore: 'Restaurar', confirmRestoreFrom: 'lotes do backup de',
+      confirmRestoreReplace: '? Isso substituirá os dados atuais.',
+      backupLast: 'último backup:', backupNone: 'nenhum backup exportado ainda',
+      invalidBackup: 'O arquivo não é um backup válido do Origen.', invalidFormat: 'Formato inválido',
+      validationName: 'O nome da variedade é obrigatório', validationDates: 'Data de torra e BB date são obrigatórios',
+      btnSell: 'Registrar venda', lblSellQty: 'Unidades vendidas:', btnConfirmSale: 'Confirmar', toastSoldOut: '✓ {name} — esgotado, lote encerrado', toastSoldPartial: '✓ {n} unidades vendidas de {name} · restam {r}', validationSellQty: 'Informe uma quantidade válida', validationSellMax: 'Não pode superar o estoque disponível ({n})',
+      productTypes: {
+        retail_bags: { name: 'Retail Bags', desc: 'Venda direta ao cliente', window: 'Vender em até 3 semanas da torra', hint: 'Vender em até 3 semanas da torra. Após 4 semanas, transferir para lata ou Condibox.' },
+        aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Para filtro — sachês 1kg', window: 'Usar entre semana 1–3 da torra', hint: 'Janela ideal: 1 a 3 semanas da torra. Antes de 1 semana → buscar lata compatível. Após 3 semanas → usar para espresso.' },
+        aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'Para espresso — latas 4kg', window: 'Usar da semana 3 até BB date', hint: 'Não usar antes de 3 semanas da torra. Janela de uso: da semana 3 até BB date. Se aproximando do BB date → contatar para ajuste de receita.' },
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Uso sazonal — flexível', window: 'Usar até BB date — repouso flexível', hint: 'Repouso flexível por uso irregular. Usar até BB date sem janela fixa de repouso.' }
+      }
+    }
+  };
+
+  let currentLang = localStorage.getItem('origen_lang') || 'en';
+
+  function t(key) { return TRANSLATIONS[currentLang][key] || TRANSLATIONS['en'][key] || key; }
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('origen_lang', lang);
+    document.documentElement.lang = lang;
+    document.getElementById('lang-selector').value = lang;
+    applyTranslations();
+    render();
+  }
+
+  function applyTranslations() {
+    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+    const setP = (id, text) => { const el = document.getElementById(id); if (el) el.placeholder = text; };
+    set('brand-subtitle', t('brandSubtitle'));
+    set('lbl-active-lots', t('activeLotsLabel'));
+    set('lbl-alerts', t('alertsLabel'));
+    set('btn-import', t('importBtn'));
+    set('btn-export', t('exportBtn'));
+    set('section-pipeline', t('sectionPipeline'));
+    set('btn-register', t('btnRegister'));
+    set('col-name-reposo', t('colReposo'));
+    set('col-name-uso', t('colUso'));
+    set('col-name-sub', t('colSub'));
+    set('sub-reposo', t('colResoSubtitle'));
+    set('sub-uso', t('colUsoSubtitle'));
+    set('sub-sub', t('colSubSubtitle'));
+    set('lbl-stat-retail', t('statRetail'));
+    set('lbl-stat-aromas-bags', t('statAromasBags'));
+    set('lbl-stat-aromas-tins', t('statAromasTins'));
+    set('lbl-stat-seasonal', t('statSeasonal'));
+    set('section-history', t('sectionHistory'));
+    set('th-strain', t('thStrain')); set('th-type', t('thType')); set('th-qty', t('thQty'));
+    set('th-roast', t('thRoast')); set('th-bb', t('thBb')); set('th-stage', t('thStage')); set('th-actions', t('thActions'));
+    set('modal-add-title', t('modalAddTitle'));
+    set('lbl-product-type', t('lblProductType')); set('lbl-strain-name', t('lblStrainName'));
+    set('lbl-country', t('lblCountry')); set('lbl-reception-date', t('lblReceptionDate'));
+    set('lbl-reception-date-2', t('lblReceptionDate')); set('lbl-roast-date', t('lblRoastDate'));
+    set('lbl-bb-date', t('lblBbDate')); set('lbl-quantity', t('lblQuantity'));
+    set('lbl-supplier', t('lblSupplier')); set('lbl-tasting-notes', t('lblTastingNotes'));
+    set('lbl-overstock', t('lblOverstock'));
+    set('opt-adjust-order', t('optAdjustOrder')); set('opt-espresso', t('optEspresso'));
+    set('opt-contact', t('optContact')); set('opt-units', t('optUnits'));
+    set('modal-back-btn', t('btnBack')); set('btn-cancel-modal', t('btnCancel'));
+    set('dm-delete-btn', t('btnDeleteLot')); set('dm-edit-btn', t('btnEdit'));
+    set('btn-close-detail', t('btnClose')); set('empty-history-text', t('emptyHistory'));
+    const placeholderMap = {
+      es: { name: 'Ej: Geisha Washed, Bourbon Natural...', origin: 'Ej: Etiopía, Colombia...', supplier: 'Nombre del proveedor', notes: 'Aromas, acidez, cuerpo, dulzura...' },
+      da: { name: 'F.eks: Geisha Washed, Bourbon Natural...', origin: 'F.eks: Etiopien, Colombia...', supplier: 'Leverandørens navn', notes: 'Aromaer, syre, krop, sødme...' },
+      pt: { name: 'Ex: Geisha Washed, Bourbon Natural...', origin: 'Ex: Etiópia, Colômbia...', supplier: 'Nome do fornecedor', notes: 'Aromas, acidez, corpo, doçura...' },
+      en: { name: 'E.g: Geisha Washed, Bourbon Natural...', origin: 'E.g: Ethiopia, Colombia...', supplier: 'Supplier name', notes: 'Aromas, acidity, body, sweetness...' }
+    };
+    const ph = placeholderMap[currentLang] || placeholderMap.en;
+    setP('f-name', ph.name); setP('f-origin', ph.origin); setP('f-supplier', ph.supplier); setP('f-notes', ph.notes);
+    PRODUCT_TYPES.forEach(pt => {
+      const tr = TRANSLATIONS[currentLang].productTypes[pt.id];
+      if (tr) { pt.name = tr.name; pt.desc = tr.desc; pt.window = tr.window; pt.hint = tr.hint; }
+    });
+  }
+
+
+  // ── THEME ────────────────────────────────────────────────────
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem('origen_theme', newTheme);
+  }
+
+  function initTheme() {
+    const saved = localStorage.getItem('origen_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('theme-icon').textContent = saved === 'dark' ? '☀️' : '🌙';
+    document.getElementById('lang-selector').value = currentLang;
+    applyTranslations();
+  }
+
+  // ── DATA ─────────────────────────────────────────────────────
+  const WEEKS3 = 21 * 24 * 60 * 60 * 1000;
+  let lotes = JSON.parse(localStorage.getItem('origen_lotes') || '[]');
+  let detailId = null;
+  let editId = null; // tracks which lote is being edited
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function updateBackupLabel() {
+    const last = localStorage.getItem('origen_last_export');
+    const el = document.getElementById('backup-label');
+    if (last) {
+      el.textContent = `${t('backupLast')} ${last}`;
+    } else {
+      el.textContent = t('backupNone');
+      el.style.color = 'rgba(250,134,94,0.5)';
+    }
+  }
+
+  function exportData() {
+    const data = { lotes, exportedAt: new Date().toISOString(), version: 1 };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `origen-backup-${dateStr}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    const label = new Date().toLocaleDateString(currentLang === 'da' ? 'da' : currentLang === 'pt' ? 'pt-BR' : currentLang === 'es' ? 'es' : 'en-GB', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    localStorage.setItem('origen_last_export', label);
+    updateBackupLabel();
+    document.getElementById('backup-label').style.color = '';
+    showToast(t('toastExported'));
+  }
+
+  function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!data.lotes || !Array.isArray(data.lotes)) throw new Error(t('invalidFormat'));
+        const backupDate = data.exportedAt ? new Date(data.exportedAt).toLocaleDateString(currentLang === 'da' ? 'da' : currentLang === 'pt' ? 'pt-BR' : currentLang === 'es' ? 'es' : 'en-GB') : 'file';
+        if (!confirm(`${t('confirmRestore')} ${data.lotes.length} ${t('confirmRestoreFrom')} ${backupDate}${t('confirmRestoreReplace')}`)) return;
+        lotes = data.lotes;
+        save();
+        render();
+        updateBackupLabel();
+        showToast(t('toastRestored'));
+      } catch(err) {
+        alert(t('invalidBackup'));
+      }
+      event.target.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  function save() { localStorage.setItem('origen_lotes', JSON.stringify(lotes)); }
+
+
+
+  function today() {
+    const d = new Date();
+    return d.toISOString().split('T')[0];
+  }
+
+  function addDays(dateStr, days) {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() + days);
+    return d.toISOString().split('T')[0];
+  }
+
+  function daysAgo(dateStr) {
+    const now = new Date(); now.setHours(0,0,0,0);
+    const d = new Date(dateStr); d.setHours(0,0,0,0);
+    return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    const [y,m,d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function formatCost(n) {
+    if (!n) return '—';
+    return '$' + parseFloat(n).toLocaleString('es', {minimumFractionDigits:0, maximumFractionDigits:0});
+  }
+
+  function getTypeConfig(lote) {
+    return PRODUCT_TYPES.find(t => t.id === lote.typeId) || PRODUCT_TYPES[2];
+  }
+
+  function getStage(lote) {
+    if (lote.stage) return lote.stage;
+    const type = getTypeConfig(lote);
+    const baseDate = lote.roastDate || lote.purchaseDate;
+    const days = daysAgo(baseDate);
+    const restDays = type.restWeeks * 7;
+    const useDays = type.useWeeks ? type.useWeeks * 7 : null;
+
+    if (days < restDays) return 'reposo';
+
+    // For types with BB date as end of use window
+    if (!useDays) {
+      if (lote.bbDate && daysAgo(lote.bbDate) >= 0) return 'subproducto';
+      return 'uso';
+    }
+
+    if (days < restDays + useDays) return 'uso';
+    return 'subproducto';
+  }
+
+  function getDaysInStage(lote) {
+    const type = getTypeConfig(lote);
+    const baseDate = lote.roastDate || lote.purchaseDate;
+    const days = daysAgo(baseDate);
+    const restDays = type.restWeeks * 7;
+    const stage = getStage(lote);
+    if (stage === 'reposo') return days;
+    if (stage === 'uso') return days - restDays;
+    return days - restDays - (type.useWeeks ? type.useWeeks * 7 : 0);
+  }
+
+  function getProgress(lote) {
+    const type = getTypeConfig(lote);
+    const baseDate = lote.roastDate || lote.purchaseDate;
+    const days = daysAgo(baseDate);
+    const stage = getStage(lote);
+    if (stage === 'subproducto') return 100;
+
+    if (stage === 'reposo') {
+      const restDays = type.restWeeks * 7;
+      return restDays > 0 ? Math.min(100, (days / restDays) * 100) : 100;
+    }
+
+    if (stage === 'uso') {
+      if (lote.bbDate && !type.useWeeks) {
+        const totalUseDays = Math.max(1, -daysAgo(lote.bbDate) + daysAgo(lote.roastDate || lote.purchaseDate) - type.restWeeks * 7);
+        const usedDays = getDaysInStage(lote);
+        return Math.min(100, (usedDays / totalUseDays) * 100);
+      }
+      const useDays = type.useWeeks * 7;
+      return Math.min(100, (getDaysInStage(lote) / useDays) * 100);
+    }
+    return 100;
+  }
+
+  function getRemainingDays(lote) {
+    const type = getTypeConfig(lote);
+    const baseDate = lote.roastDate || lote.purchaseDate;
+    const days = daysAgo(baseDate);
+    const stage = getStage(lote);
+
+    if (stage === 'reposo') {
+      return type.restWeeks * 7 - days;
+    }
+    if (stage === 'uso') {
+      if (!type.useWeeks && lote.bbDate) {
+        return -daysAgo(lote.bbDate); // days until bb date
+      }
+      return (type.restWeeks * 7 + type.useWeeks * 7) - days;
+    }
+    return 0;
+  }
+
+  function getBadge(lote) {
+    const stage = getStage(lote);
+    const remaining = getRemainingDays(lote);
+
+    if (stage === 'reposo') {
+      if (remaining <= 3) return ['warn', `${remaining}${t('badgeDaysToUse')}`];
+      return ['ok', `${remaining}${t('badgeDaysToUse')}`];
+    }
+    if (stage === 'uso') {
+      if (remaining <= 3) return ['urgent', `${remaining}${t('badgeWithdrawSoon')}`];
+      if (remaining <= 7) return ['warn', `${remaining}${t('badgeDaysAvail')}`];
+      return ['ok', `${remaining}${t('badgeDaysAvail')}`];
+    }
+    return ['ok', t('badgeByproduct')];
+  }
+
+  function render() {
+    renderAlerts();
+    renderPipeline();
+    renderHistory();
+    renderStats();
+  }
+
+  function renderStats() {
+    const active = lotes.filter(l => getStage(l) !== 'completado');
+    document.getElementById('stat-total').textContent = active.length;
+
+    let alertCount = 0;
+    lotes.forEach(l => {
+      const stage = getStage(l);
+      const d = getDaysInStage(l);
+      const remaining = 21 - d;
+      if ((stage === 'reposo' || stage === 'uso') && remaining <= 3) alertCount++;
+    });
+    document.getElementById('stat-alerts').textContent = alertCount;
+    const alertEl = document.getElementById('stat-alerts');
+    alertEl.style.color = '';
+    alertEl.classList.toggle('has-alert', alertCount > 0);
+
+    // Stock by product type — count of active lots
+    const stockByType = { retail_bags: 0, aromas_bags_1kg: 0, aromas_tins_4kg: 0, seasonal_tins_4kg: 0 };
+    lotes.forEach(l => {
+      const stage = getStage(l);
+      const qty = parseFloat(l.qty) || 0;
+      if (stage === 'completado' || stage === 'subproducto') return;
+      if (qty <= 0) return;
+      if (stockByType.hasOwnProperty(l.typeId)) stockByType[l.typeId] += qty;
+    });
+    document.getElementById('stat-retail').textContent = stockByType.retail_bags + t('unitU');
+    document.getElementById('stat-aromas-bags').textContent = stockByType.aromas_bags_1kg + t('unitU');
+    document.getElementById('stat-aromas-tins').textContent = stockByType.aromas_tins_4kg + t('unitU');
+    document.getElementById('stat-seasonal').textContent = stockByType.seasonal_tins_4kg + t('unitU');
+  }
+
+  function renderAlerts() {
+    const el = document.getElementById('alerts-section');
+    el.innerHTML = '';
+    lotes.forEach(l => {
+      const stage = getStage(l);
+      const remaining = getRemainingDays(l);
+      const type = getTypeConfig(l);
+      const icon = '';
+
+      if (stage === 'reposo' && remaining <= 3) {
+        el.innerHTML += `<div class="alert-card"><div class="alert-dot"></div><div class="alert-text"><strong>${l.name}</strong> <span style="color:var(--text-muted)">(${l.typeName || ''})</span> — ${t('alertReadyIn')} <strong>${remaining} ${remaining !== 1 ? t('alertDays') : t('alertDay')}</strong></div></div>`;
+      }
+      if (stage === 'uso' && remaining <= 4) {
+        el.innerHTML += `<div class="alert-card"><div class="alert-dot"></div><div class="alert-text"><strong>${l.name}</strong> <span style="color:var(--text-muted)">(${l.typeName || ''})</span> — <strong>${remaining} ${remaining !== 1 ? t('alertDays') : t('alertDay')}</strong> ${t('alertRemaining')}</div></div>`;
+      }
+      // Special: retail bags overstock warning
+      if (l.typeId === 'retail_bags' && stage === 'uso') {
+        const baseDate = l.roastDate || l.purchaseDate;
+        const totalDays = daysAgo(baseDate);
+        if (totalDays > 21 && totalDays <= 28) {
+          el.innerHTML += `<div class="alert-card"><div class="alert-dot"></div><div class="alert-text"><strong>${l.name}</strong> — ${t('alertOverstock')}</div></div>`;
+        }
+      }
+    });
+  }
+
+  function makeCoffeeCard(lote, colClass) {
+    const stage = getStage(lote);
+    const progress = getProgress(lote);
+    const [badgeClass, badgeText] = getBadge(lote);
+    const daysInStage = getDaysInStage(lote);
+    const isUrgent = badgeClass === 'urgent';
+    const qty = lote.qty ? `${lote.qty} ${lote.unit || 'kg'}` : (lote.kg ? `${lote.kg} kg` : '—');
+    const icon = '';
+    const typeName = lote.typeName || '';
+    const baseDate = lote.roastDate || lote.purchaseDate;
+    const remaining = getRemainingDays(lote);
+    
+    return `<div class="coffee-card ${isUrgent ? 'urgent' : ''}" onclick="openDetail('${lote.id}')">
+      <div class="coffee-card-top">
+        <div>
+          <div class="coffee-name">${lote.name}</div>
+          <div class="coffee-origin">${lote.origin || '—'} ${typeName ? `· <span style="color:rgba(227,181,5,0.5)">${typeName}</span>` : ''}</div>
+        </div>
+        <div class="coffee-badge badge-${badgeClass}">${badgeText}</div>
+      </div>
+      <div class="coffee-meta">
+        <div class="coffee-meta-item">${t('cardQty')}<span>${qty}</span></div>
+        <div class="coffee-meta-item">${t('cardRoast')}<span>${formatDate(baseDate)}</span></div>
+        ${lote.bbDate ? `<div class="coffee-meta-item">${t('cardBbDate')}<span>${formatDate(lote.bbDate)}</span></div>` : ''}
+      </div>
+      <div class="time-bar"><div class="time-bar-fill" style="width:${progress}%"></div></div>
+      <div class="time-label"><span>${t('cardDay')} ${daysInStage} ${t('cardInStage')}</span><span>${lote.supplier || ''}</span></div>
+    </div>`;
+  }
+
+
+  function groupLotesByName(lotesArr) {
+    const groups = {};
+    lotesArr.forEach(l => {
+      const key = l.typeId;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(l);
+    });
+    // Sort each group by urgency (least remaining days first)
+    Object.values(groups).forEach(g => g.sort((a, b) => getRemainingDays(a) - getRemainingDays(b)));
+    // Sort groups by most urgent lot first
+    return Object.values(groups).sort((a, b) => getRemainingDays(a[0]) - getRemainingDays(b[0]));
+  }
+
+  function makeGroupSummaryBadge(group) {
+    const days = group.map(l => getRemainingDays(l));
+    const badges = group.map(l => getBadge(l)[0]);
+    const hasUrgent = badges.includes('urgent');
+    const hasWarn = badges.includes('warn');
+    const cls = hasUrgent ? 'has-urgent' : hasWarn ? 'has-warn' : 'ok';
+    const n = group.length;
+    let dayStr;
+    if (n <= 3) {
+      dayStr = days.map(d => `${d}d`).join(' / ');
+    } else {
+      dayStr = `${days[0]}d / ${days[1]}d +${n - 2}`;
+    }
+    return `<span class="group-summary-badge ${cls}">${n} ${t('groupLots')} · ${dayStr}</span>`;
+  }
+
+  function makeGroupCard(group, colClass) {
+    if (group.length === 1) return makeCoffeeCard(group[0], colClass);
+    const first = group[0];
+    const groupId = 'grp-' + first.typeId;
+    const summaryBadge = makeGroupSummaryBadge(group);
+    const typeName = first.typeName || first.typeId;
+    const grainNames = [...new Set(group.map(l => l.name))].slice(0, 3).join(', ');
+    const innerCards = group.map(l => makeCoffeeCard(l, colClass)).join('');
+    return `<div class="group-card">
+      <div class="group-header" onclick="toggleGroup('${groupId}')">
+        <div class="group-header-left">
+          <div class="group-name">${typeName}</div>
+          <div class="group-meta" style="color:var(--text-muted);font-size:0.7rem">${grainNames}${group.length > 3 ? ' +' + (group.length - 3) : ''}</div>
+        </div>
+        <div class="group-header-right">
+          ${summaryBadge}
+          <span class="group-chevron" id="chv-${groupId}">▼</span>
+        </div>
+      </div>
+      <div class="group-lots" id="${groupId}">${innerCards}</div>
+    </div>`;
+  }
+
+  function toggleGroup(groupId) {
+    const el = document.getElementById(groupId);
+    const chv = document.getElementById('chv-' + groupId);
+    if (el) { el.classList.toggle('open'); }
+    if (chv) { chv.classList.toggle('open'); }
+  }
+
+  function renderPipeline() {
+    const reposo = lotes.filter(l => getStage(l) === 'reposo');
+    const uso = lotes.filter(l => getStage(l) === 'uso');
+    const sub = lotes.filter(l => getStage(l) === 'subproducto');
+
+    document.getElementById('count-reposo').textContent = reposo.length;
+    document.getElementById('count-uso').textContent = uso.length;
+    document.getElementById('count-sub').textContent = sub.length;
+
+    const r = document.getElementById('col-reposo-cards');
+    r.innerHTML = reposo.length ? groupLotesByName(reposo).map(g => makeGroupCard(g, 'col-reposo')).join('')
+      : `<div class="empty-state"><div>${t('emptyReposo')}</div></div>`;
+
+    const u = document.getElementById('col-uso-cards');
+    u.innerHTML = uso.length ? groupLotesByName(uso).map(g => makeGroupCard(g, 'col-uso')).join('')
+      : `<div class="empty-state"><div>${t('emptyUso')}</div></div>`;
+
+    const s = document.getElementById('col-sub-cards');
+    s.innerHTML = sub.length ? groupLotesByName(sub).map(g => makeGroupCard(g, 'col-subproducto')).join('')
+      : `<div class="empty-state"><div>${t('emptySub')}</div></div>`;
+  }
+
+  function renderHistory() {
+    const tbody = document.getElementById('history-body');
+    const empty = document.getElementById('history-empty');
+    document.getElementById('history-count').textContent = `${lotes.length} ${lotes.length !== 1 ? t('historyCountN') : t('historyCount1')}`;
+
+    if (lotes.length === 0) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    const sorted = [...lotes].sort((a,b) => new Date(b.roastDate || b.purchaseDate) - new Date(a.roastDate || a.purchaseDate));
+    tbody.innerHTML = sorted.map(l => {
+      const stage = getStage(l);
+      const pillMap = { reposo: 'pill-reposo', uso: 'pill-uso', subproducto: 'pill-subproducto', completado: 'pill-completado' };
+      const labelMap = { reposo: t('stageReposo'), uso: t('stageUso'), subproducto: t('stageSub'), completado: t('stageDone') };
+      const qty = l.qty ? `${l.qty} ${l.unit || 'kg'}` : (l.kg ? `${l.kg} kg` : '—');
+      const icon = '';
+      
+      let actionBtns = '';
+      if (stage === 'reposo') actionBtns += `<button class="advance-btn to-uso" onclick="event.stopPropagation();advanceStage('${l.id}','uso')">→ ${t('stageUso')}</button>`;
+      if (stage === 'uso') actionBtns += `<button class="advance-btn to-sub" onclick="event.stopPropagation();advanceStage('${l.id}','subproducto')">→ ${t('stageSub')}</button>`;
+      if (stage === 'subproducto') actionBtns += `<button class="advance-btn to-done" onclick="event.stopPropagation();advanceStage('${l.id}','completado')">✓ ${t('stageDone')}</button>`;
+      actionBtns += `<button class="btn-danger" onclick="event.stopPropagation();deleteLote('${l.id}')" style="padding:0.3rem 0.6rem;font-size:0.65rem">✕</button>`;
+
+      return `<tr onclick="openDetail('${l.id}')" style="cursor:pointer">
+        <td><strong style="color:var(--text)">${l.name}</strong>${l.origin ? `<br><span style="font-size:0.75rem;color:var(--text-muted)">${l.origin}</span>` : ''}</td>
+        <td><span style="font-size:0.72rem;color:var(--text-muted)">${l.typeName || '—'}</span></td>
+        <td>${qty}</td>
+        <td style="font-family:'DM Mono',monospace;font-size:0.8rem">${formatDate(l.roastDate || l.purchaseDate)}</td>
+        <td style="font-family:'DM Mono',monospace;font-size:0.8rem">${formatDate(l.bbDate)}</td>
+        <td><span class="stage-pill ${pillMap[stage]}">${labelMap[stage]}</span></td>
+        <td class="actions-cell">${actionBtns}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── PRODUCT TYPES ──────────────────────────────────────────────
+  const PRODUCT_TYPES = [
+    {
+      id: 'retail_bags',
+      name: 'Retail Bags',
+      icon: '',
+      desc: 'Venta directa al cliente',
+      unit: 'unidades',
+      unitLabel: 'Cantidad (unidades)',
+      restWeeks: 0,
+      useWeeks: 3,
+      window: 'Vender dentro de 3 semanas del roast',
+      overstockAction: true,
+      hint: 'Vender antes de 3 semanas del roast. Si pasan 4 semanas, transferir a tin o Condibox.'
+    },
+    {
+      id: 'aromas_bags_1kg',
+      name: '1kg Aromas Bags',
+      icon: '',
+      desc: 'Para filter — bolsas 1kg',
+      unit: 'kg',
+      unitLabel: 'Cantidad (kg)',
+      restWeeks: 1,
+      useWeeks: 2,
+      window: 'Usar entre semana 1–3 del roast',
+      overstockAction: false,
+      hint: 'Ventana óptima: 1 a 3 semanas del roast. Antes de 1 semana → buscar tin con fecha compatible. Después de 3 semanas → usar para espresso.'
+    },
+    {
+      id: 'aromas_tins_4kg',
+      name: '4kg Aromas Tins',
+      icon: '',
+      desc: 'Para espresso — tins 4kg',
+      unit: 'kg',
+      unitLabel: 'Cantidad (kg)',
+      restWeeks: 3,
+      useWeeks: null, // uses BB date
+      window: 'Usar desde semana 3 hasta BB date',
+      overstockAction: false,
+      hint: 'No usar antes de 3 semanas del roast. Ventana de uso: desde semana 3 hasta BB date. Si se acerca BB date → contactar para ajuste de receta.'
+    },
+    {
+      id: 'seasonal_tins_4kg',
+      name: '4kg Seasonal Tins',
+      icon: '',
+      desc: 'Uso estacional — flexible',
+      unit: 'kg',
+      unitLabel: 'Cantidad (kg)',
+      restWeeks: 0,
+      useWeeks: null, // uses BB date
+      window: 'Usar hasta BB date — reposo flexible',
+      overstockAction: false,
+      hint: 'Reposo flexible por uso irregular. Usar hasta BB date sin ventana fija de reposo.'
+    }
+  ];
+
+  let selectedType = null;
+  let formStep = 1;
+
+  function initTypeGrid() {
+    const grid = document.getElementById('type-grid');
+    grid.innerHTML = PRODUCT_TYPES.map(t => `
+      <div class="type-option" id="type-opt-${t.id}" onclick="selectType('${t.id}')">
+        <div class="type-option-name">${t.name}</div>
+        <div class="type-option-desc">${t.desc}</div>
+        <div class="type-option-window">${t.window}</div>
+      </div>
+    `).join('');
+  }
+
+  function selectType(typeId) {
+    selectedType = PRODUCT_TYPES.find(t => t.id === typeId);
+    document.querySelectorAll('.type-option').forEach(el => el.classList.remove('selected'));
+    document.getElementById(`type-opt-${typeId}`).classList.add('selected');
+    // Auto-advance immediately
+    setTimeout(() => formNext(), 120);
+  }
+
+  function formBack() {
+    formStep = 1;
+    document.getElementById('form-step-1').style.display = 'block';
+    document.getElementById('form-step-2').style.display = 'none';
+    document.getElementById('modal-back-btn').style.display = 'none';
+    document.getElementById('modal-next-btn').style.display = 'none';
+  }
+
+  function formNext() {
+    if (!selectedType) return;
+    formStep = 2;
+
+    const isAromas = selectedType.id === 'aromas_bags_1kg' || selectedType.id === 'aromas_tins_4kg';
+
+    // Show/hide fields based on type
+    document.getElementById('f-name-group').style.display = isAromas ? 'none' : 'block';
+    document.getElementById('f-origin-row').style.display = isAromas ? 'none' : 'flex';
+    document.getElementById('f-purchase-date-solo').style.display = isAromas ? 'block' : 'none';
+
+    // Button label
+    document.getElementById('modal-next-btn').textContent = isAromas ? t('btnRegisterIngreso') : t('btnRegisterLot');
+
+    document.getElementById('f-overstock-group').style.display = selectedType.overstockAction ? 'block' : 'none';
+
+    // Reset unit dropdown to default
+    document.getElementById('f-unit').value = 'unidades';
+
+    document.getElementById('selected-type-bar').innerHTML = `
+      <strong>${selectedType.name}</strong>
+      <span style="color:var(--text-muted);margin-left:0.25rem">— ${selectedType.desc}</span>
+    `;
+
+    document.getElementById('form-step-1').style.display = 'none';
+    document.getElementById('form-step-2').style.display = 'block';
+    document.getElementById('modal-back-btn').style.display = 'inline-flex';
+    document.getElementById('modal-next-btn').style.display = 'inline-flex';
+  }
+
+  function openAddModal() {
+    selectedType = null;
+    formStep = 1;
+    initTypeGrid();
+    document.getElementById('form-step-1').style.display = 'block';
+    document.getElementById('form-step-2').style.display = 'none';
+    document.getElementById('modal-back-btn').style.display = 'none';
+    document.getElementById('modal-next-btn').style.display = 'none';
+
+    ['f-name','f-origin','f-supplier','f-notes'].forEach(id => document.getElementById(id).value = '');
+    ['f-purchase-date','f-roast-date','f-bb-date','f-purchase-date-2'].forEach(id => document.getElementById(id).value = today());
+    document.getElementById('f-qty').value = '';
+    document.getElementById('f-unit').value = 'unidades';
+
+    document.getElementById('add-modal').classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    if (id === 'add-modal') editId = null;
+  }
+
+  function addLote() {
+    const isAromas = selectedType.id === 'aromas_bags_1kg' || selectedType.id === 'aromas_tins_4kg';
+    const name = isAromas ? selectedType.name : document.getElementById('f-name').value.trim();
+    const roastDate = document.getElementById('f-roast-date').value;
+    const bbDate = document.getElementById('f-bb-date').value;
+    if (!isAromas && !document.getElementById('f-name').value.trim()) { alert(t('validationName')); return; }
+    if (!roastDate || !bbDate) { alert(t('validationDates')); return; }
+
+    const purchaseDate = isAromas
+      ? document.getElementById('f-purchase-date-2').value
+      : document.getElementById('f-purchase-date').value;
+
+    if (editId) {
+      // UPDATE existing lote
+      const idx = lotes.findIndex(x => x.id === editId);
+      if (idx !== -1) {
+        lotes[idx] = {
+          ...lotes[idx],
+          name,
+          origin: isAromas ? '' : document.getElementById('f-origin').value.trim(),
+          purchaseDate,
+          roastDate,
+          bbDate,
+          qty: document.getElementById('f-qty').value,
+          unit: document.getElementById('f-unit').value,
+          supplier: document.getElementById('f-supplier').value.trim(),
+          notes: document.getElementById('f-notes').value.trim(),
+        };
+      }
+      editId = null;
+      save();
+      render();
+      closeModal('add-modal');
+      showToast(`${t('toastUpdated').replace('✓', '✓ ' + name)}`);
+    } else {
+      // CREATE new lote
+      const lote = {
+        id: Date.now().toString(),
+        typeId: selectedType.id,
+        typeName: selectedType.name,
+        typeIcon: selectedType.icon,
+        name,
+        origin: isAromas ? '' : document.getElementById('f-origin').value.trim(),
+        purchaseDate,
+        roastDate,
+        bbDate,
+        qty: document.getElementById('f-qty').value,
+        unit: document.getElementById('f-unit').value,
+        cost: '',
+        supplier: document.getElementById('f-supplier').value.trim(),
+        notes: document.getElementById('f-notes').value.trim(),
+        overstockAction: selectedType.overstockAction ? document.getElementById('f-overstock-action').value : null,
+        stage: null,
+        stageHistory: []
+      };
+      lotes.push(lote);
+      save();
+      render();
+      closeModal('add-modal');
+      showToast(`${t('toastRegistered').replace('✓', '✓ ' + lote.name)}`);
+    }
+  }
+
+  function advanceStage(id, newStage) {
+    const l = lotes.find(x => x.id === id);
+    if (!l) return;
+    l.stage = newStage;
+    if (!l.stageHistory) l.stageHistory = [];
+    l.stageHistory.push({ stage: newStage, date: today() });
+    save();
+    render();
+    if (detailId === id) openDetail(id);
+  }
+
+  function deleteLote(id) {
+    if (!confirm(t('confirmDelete'))) return;
+    lotes = lotes.filter(l => l.id !== id);
+    save();
+    render();
+    if (detailId === id) closeModal('detail-modal');
+  }
+
+  function openEditModal(id) {
+    const l = lotes.find(x => x.id === id);
+    if (!l) return;
+    editId = id;
+
+    // Close detail modal
+    closeModal('detail-modal');
+
+    // Setup form like openAddModal
+    selectedType = PRODUCT_TYPES.find(t => t.id === l.typeId) || PRODUCT_TYPES[0];
+    formStep = 2;
+
+    // Pre-select type
+    initTypeGrid();
+    document.querySelectorAll('.type-option').forEach(el => el.classList.remove('selected'));
+    const typeOpt = document.getElementById(`type-opt-${selectedType.id}`);
+    if (typeOpt) typeOpt.classList.add('selected');
+
+    const isAromas = selectedType.id === 'aromas_bags_1kg' || selectedType.id === 'aromas_tins_4kg';
+
+    // Show step 2 directly
+    document.getElementById('form-step-1').style.display = 'none';
+    document.getElementById('form-step-2').style.display = 'block';
+    document.getElementById('modal-back-btn').style.display = 'none';
+    document.getElementById('modal-next-btn').style.display = 'inline-flex';
+
+    // Toggle fields
+    document.getElementById('f-name-group').style.display = isAromas ? 'none' : 'block';
+    document.getElementById('f-origin-row').style.display = isAromas ? 'none' : 'flex';
+    document.getElementById('f-purchase-date-solo').style.display = isAromas ? 'block' : 'none';
+    document.getElementById('f-overstock-group').style.display = selectedType.overstockAction ? 'block' : 'none';
+
+    // Button label
+    document.getElementById('modal-next-btn').textContent = t('btnSaveChanges');
+
+    // Selected type bar
+    document.getElementById('selected-type-bar').innerHTML = `
+      <strong>${selectedType.name}</strong>
+      <span style="color:var(--text-muted);margin-left:0.25rem">— ${selectedType.desc}</span>
+    `;
+
+    // Pre-fill fields
+    document.getElementById('f-name').value = l.name || '';
+    document.getElementById('f-origin').value = l.origin || '';
+    document.getElementById('f-purchase-date').value = l.purchaseDate || '';
+    document.getElementById('f-purchase-date-2').value = l.purchaseDate || '';
+    document.getElementById('f-roast-date').value = l.roastDate || '';
+    document.getElementById('f-bb-date').value = l.bbDate || '';
+    document.getElementById('f-qty').value = l.qty || '';
+    document.getElementById('f-unit').value = l.unit || 'unidades';
+    document.getElementById('f-supplier').value = l.supplier || '';
+    document.getElementById('f-notes').value = l.notes || '';
+
+    document.getElementById('add-modal').classList.add('open');
+  }
+
+
+  let sellLoteId = null;
+
+  function toggleSellSection(show) {
+    document.getElementById('dm-sell-section').style.display = show ? 'block' : 'none';
+    if (show) {
+      document.getElementById('dm-sell-qty').value = '';
+      document.getElementById('dm-sell-qty').focus();
+    }
+  }
+
+  function registerSale(id) {
+    const l = lotes.find(x => x.id === id);
+    if (!l) return;
+    const sellQty = parseFloat(document.getElementById('dm-sell-qty').value);
+    const currentQty = parseFloat(l.qty) || 0;
+    if (!sellQty || sellQty <= 0) { alert(t('validationSellQty')); return; }
+    if (sellQty > currentQty) { alert(t('validationSellMax').replace('{n}', currentQty)); return; }
+    const newQty = currentQty - sellQty;
+    if (newQty === 0) {
+      // Sold out — mark as completed
+      l.qty = 0;
+      l.stage = 'completado';
+      if (!l.stageHistory) l.stageHistory = [];
+      l.stageHistory.push({ stage: 'completado', date: today() });
+      save(); render(); closeModal('detail-modal');
+      showToast(t('toastSoldOut').replace('{name}', l.name));
+    } else {
+      l.qty = newQty;
+      save(); render();
+      toggleSellSection(false);
+      openDetail(id);
+      showToast(t('toastSoldPartial').replace('{n}', sellQty).replace('{name}', l.name).replace('{r}', newQty));
+    }
+  }
+
+  function openDetail(id) {
+    detailId = id;
+    const l = lotes.find(x => x.id === id);
+    if (!l) return;
+
+    document.getElementById('dm-title').textContent = l.name;
+
+    const stage = getStage(l);
+    const stages = ['reposo', 'uso', 'subproducto', 'completado'];
+    const stageIdx = stages.indexOf(stage);
+    const stageLabels = [t('stageReposo'), t('stageUso'), t('stageSub'), t('stageDone')];
+    const stageIcons = ['', '', '', ''];
+
+    const timeline = document.getElementById('dm-timeline');
+    timeline.innerHTML = stages.map((s, i) => {
+      const isDone = i < stageIdx;
+      const isActive = i === stageIdx;
+      const cls = isDone ? 'done' : (isActive ? 'active' : '');
+      const histEntry = l.stageHistory && l.stageHistory.find(h => h.stage === s);
+      const dateStr = s === 'reposo' ? formatDate(l.purchaseDate) : (histEntry ? formatDate(histEntry.date) : '');
+      return `<div class="timeline-step">
+        <div class="timeline-dot ${cls}">${isDone ? '✓' : stageIcons[i]}</div>
+        <div class="timeline-label">${stageLabels[i]}</div>
+        <div class="timeline-date">${dateStr}</div>
+      </div>`;
+    }).join('');
+
+    const grid = document.getElementById('dm-grid');
+    const qty = l.qty ? `${l.qty} ${l.unit || 'kg'}` : (l.kg ? `${l.kg} kg` : '—');
+    const type = getTypeConfig(l);
+    grid.innerHTML = `
+      <div class="detail-item"><label>${t('detailType')}</label><div class="detail-val">${l.typeName || '—'}</div></div>
+      <div class="detail-item"><label>${t('detailOrigin')}</label><div class="detail-val">${l.origin || '—'}</div></div>
+      <div class="detail-item"><label id="lbl-supplier"></label><div class="detail-val">${l.supplier || '—'}</div></div>
+      <div class="detail-item"><label id="lbl-quantity"></label><div class="detail-val">${qty}</div></div>
+      <div class="detail-item"><label>${t('detailCost')}</label><div class="detail-val">${formatCost(l.cost)}</div></div>
+      <div class="detail-item"><label>${t('detailReception')}</label><div class="detail-val">${formatDate(l.purchaseDate)}</div></div>
+      <div class="detail-item"><label>${t('detailRoast')}</label><div class="detail-val">${formatDate(l.roastDate)}</div></div>
+      <div class="detail-item"><label>${t('detailBb')}</label><div class="detail-val" style="${getRemainingDays(l) <= 7 && getStage(l)==='uso' ? 'color:var(--cta)' : ''}">${formatDate(l.bbDate)}</div></div>
+      ${type ? `<div class="detail-item" style="grid-column:1/-1"><label>${t('detailRule')}</label><div class="type-hint">${type.hint}</div></div>` : ''}
+    `;
+
+    document.getElementById('dm-notes').textContent = l.notes || t('detailNoNotes');
+    document.getElementById('dm-delete-btn').onclick = () => deleteLote(id);
+    document.getElementById('dm-sell-btn').onclick = () => toggleSellSection(true);
+    document.getElementById('dm-sell-confirm').onclick = () => registerSale(id);
+    toggleSellSection(false);
+    // Set sell button label and sell section labels
+    document.getElementById('dm-sell-btn').textContent = t('btnSell');
+    document.getElementById('lbl-sell-qty').textContent = t('lblSellQty');
+    document.getElementById('dm-sell-confirm').textContent = t('btnConfirmSale');
+    const cancelSellBtn = document.querySelector('#dm-sell-section .btn-secondary');
+    if (cancelSellBtn) cancelSellBtn.textContent = t('btnCancel');
+    document.getElementById('dm-edit-btn').onclick = () => openEditModal(id);
+    document.getElementById('detail-modal').classList.add('open');
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+  });
+
+
+  initTheme();
+  render();
+  updateBackupLabel();
+</script>
+</body>
+</html>
