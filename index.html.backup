@@ -680,51 +680,6 @@
   [data-theme="dark"] .pill-subproducto { color: #E8824A; background: rgba(212,115,58,0.15); }
   [data-theme="dark"] .pill-completado { background: rgba(255,255,255,0.06); color: var(--text-muted); }
 
-  /* LIFECYCLE STATUS BADGES (CAF-11) */
-  .lcs-badge {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.62rem;
-    font-weight: 700;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    display: inline-block;
-  }
-  .lcs-vencido { background: rgba(220,50,50,0.12); color: #b02020; }
-  .lcs-en-produccion { background: rgba(80,120,220,0.12); color: #2a4ea8; }
-  [data-theme="dark"] .lcs-vencido { background: rgba(255,80,80,0.15); color: #ff7070; }
-  [data-theme="dark"] .lcs-en-produccion { background: rgba(100,150,255,0.15); color: #89aeff; }
-
-  /* Lifecycle toggle buttons in detail modal */
-  .lcs-btn-group { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.4rem; }
-  .lcs-btn {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.35rem 0.9rem;
-    border-radius: 6px;
-    border: 1.5px solid var(--border);
-    background: var(--surface2);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .lcs-btn:hover { border-color: var(--primary); color: var(--primary); }
-  .lcs-btn.active-activo { border-color: #4a9e6b; background: rgba(74,158,107,0.1); color: #1A6040; }
-  .lcs-btn.active-vencido { border-color: #b02020; background: rgba(220,50,50,0.1); color: #b02020; }
-  .lcs-btn.active-en-produccion { border-color: #2a4ea8; background: rgba(80,120,220,0.1); color: #2a4ea8; }
-  [data-theme="dark"] .lcs-btn.active-activo { border-color: #5BBF82; background: rgba(91,191,130,0.12); color: #5BBF82; }
-  [data-theme="dark"] .lcs-btn.active-vencido { border-color: #ff7070; background: rgba(255,80,80,0.12); color: #ff7070; }
-  [data-theme="dark"] .lcs-btn.active-en-produccion { border-color: #89aeff; background: rgba(100,150,255,0.12); color: #89aeff; }
-
-  /* Card lifecycle overlay badge */
-  .card-lcs-overlay {
-    display: inline-block;
-    margin-left: 0.5rem;
-    vertical-align: middle;
-  }
-
   /* ADVANCE BUTTON */
   .advance-btn {
     font-family: 'Inter', sans-serif;
@@ -1045,14 +1000,6 @@
         <span class="stat-val" id="stat-seasonal">0</span>
         <span class="stat-lbl" id="lbl-stat-seasonal"></span>
       </div>
-      <div class="stat stat-divider">
-        <span class="stat-val" id="stat-vencidos" style="color:#b02020">0</span>
-        <span class="stat-lbl" id="lbl-stat-vencidos"></span>
-      </div>
-      <div class="stat">
-        <span class="stat-val" id="stat-en-produccion" style="color:#2a4ea8">0</span>
-        <span class="stat-lbl" id="lbl-stat-en-produccion"></span>
-      </div>
     </div>
     <select id="lang-selector" onchange="setLang(this.value)" style="background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;font-size:0.75rem;cursor:pointer;font-family:'Inter',sans-serif">
       <option value="en">🇬🇧 EN</option>
@@ -1121,37 +1068,11 @@
     </div>
   </div>
 
-  <!-- WEEKLY SALES REPORT (CAF-10) -->
-  <div class="history-section" id="weekly-sales-section">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title" id="section-weekly-sales"></h2>
-      </div>
-      <div style="display:flex;gap:0.5rem;align-items:center">
-        <button onclick="changeWeek(-1)" class="btn-secondary" style="padding:0.3rem 0.75rem;font-size:0.9rem">←</button>
-        <span id="weekly-range-label" style="font-size:0.82rem;color:var(--text-secondary);min-width:160px;text-align:center"></span>
-        <button onclick="changeWeek(1)" class="btn-secondary" style="padding:0.3rem 0.75rem;font-size:0.9rem">→</button>
-      </div>
-    </div>
-    <div id="weekly-sales-body"></div>
-    <div id="weekly-sales-empty" class="empty-state" style="display:none">
-      <div id="weekly-sales-empty-text" style="color:var(--text-muted);font-size:0.9rem;padding:1.5rem 0"></div>
-    </div>
-  </div>
-
   <!-- HISTORY -->
   <div class="history-section">
     <div class="section-header">
       <h2 class="section-title" id="section-history"></h2>
-      <div style="display:flex;align-items:center;gap:0.75rem">
-        <span class="section-sub" id="history-count">— lotes registrados</span>
-        <select id="history-lifecycle-filter" onchange="renderHistory()" style="background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:0.25rem 0.5rem;font-size:0.72rem;cursor:pointer;font-family:'Inter',sans-serif">
-          <option value="all" id="filter-all-opt"></option>
-          <option value="activo" id="filter-activo-opt"></option>
-          <option value="vencido" id="filter-vencido-opt"></option>
-          <option value="en_produccion" id="filter-en-produccion-opt"></option>
-        </select>
-      </div>
+      <span class="section-sub" id="history-count">— lotes registrados</span>
     </div>
     <table class="history-table">
       <thead>
@@ -1162,7 +1083,6 @@
           <th id="th-roast"></th>
           <th id="th-bb"></th>
           <th id="th-stage"></th>
-          <th id="th-lifecycle"></th>
           <th id="th-actions"></th>
         </tr>
       </thead>
@@ -1198,7 +1118,11 @@
         </select>
         <input type="text" id="f-name-custom" placeholder="Escribir nombre del producto..." style="display:none;margin-top:0.5rem" />
       </div>
-      <div id="f-origin-row">
+      <div class="form-row" id="f-origin-row">
+        <div class="form-group">
+          <label id="lbl-country"></label>
+          <input type="text" id="f-origin" placeholder="Ej: Etiopía, Colombia..." />
+        </div>
         <div class="form-group">
           <label id="lbl-reception-date"></label>
           <input type="date" id="f-purchase-date" />
@@ -1229,6 +1153,10 @@
             <input type="number" id="f-qty" min="0.1" step="0.1" placeholder="0" style="flex:1" />
           </div>
         </div>
+      </div>
+      <div class="form-group">
+        <label id="lbl-supplier"></label>
+        <input type="text" id="f-supplier" placeholder="Nombre del proveedor" />
       </div>
       <div class="form-group">
         <label id="lbl-tasting-notes"></label>
@@ -1262,7 +1190,7 @@
     <div id="dm-sell-section" style="margin:0.75rem 0;display:none">
       <div style="display:flex;align-items:center;gap:0.5rem;background:var(--surface2);padding:0.75rem;border-radius:8px">
         <label id="lbl-sell-qty" style="font-size:0.8rem;color:var(--text-secondary);white-space:nowrap"></label>
-        <input type="number" id="dm-sell-qty" min="0" step="1" style="width:80px;flex-shrink:0" placeholder="0"/>
+        <input type="number" id="dm-sell-qty" min="1" step="1" style="width:80px;flex-shrink:0" placeholder="0"/>
         <button class="btn-primary" id="dm-sell-confirm" style="font-size:0.78rem;padding:0.4rem 0.8rem;white-space:nowrap"></button>
         <button class="btn-secondary" onclick="toggleSellSection(false)" style="font-size:0.78rem;padding:0.4rem 0.8rem"></button>
       </div>
@@ -1286,8 +1214,7 @@
       sectionPipeline: 'Maturation Pipeline', btnRegister: '+ Register Lot',
       colReposo: 'Resting', colUso: 'Available for Use', colSub: 'By-product',
       colResoSubtitle: '3 weeks', colUsoSubtitle: '3 weeks', colSubSubtitle: 'Removed from sale',
-      sectionHistory: 'Lot History', sectionWeeklySales: 'Weekly Sales', weeklyNoSales: 'No sales recorded this week.', weeklyColVariety: 'Variety', weeklyColType: 'Type', weeklyColSold: 'Units sold', weeklyTotal: 'Week total',
-      statusActivo: 'Active', statusVencido: 'Expired', statusEnProduccion: 'In production', lblLifecycleStatus: 'Status', filterAll: 'All', statVencidos: 'Expired', statEnProduccion: 'In prod.', thLifecycle: 'Status',
+      sectionHistory: 'Lot History',
       thStrain: 'Variety / Origin', thType: 'Type', thQty: 'Quantity', thRoast: 'Roast date', thBb: 'BB date', thStage: 'Stage', thActions: 'Actions',
       modalAddTitle: 'Register New Lot', lblProductType: 'Product type', lblStrainName: 'Variety / strain name',
       lblCountry: 'Country / Origin', lblReceptionDate: 'Reception date', lblRoastDate: 'Roast date',
@@ -1313,7 +1240,7 @@
       backupLast: 'last backup:', backupNone: 'no backup exported yet',
       invalidBackup: 'The file is not a valid Origen backup.', invalidFormat: 'Invalid format',
       validationName: 'Variety name is required', validationDates: 'Roast date and BB date are required',
-      btnSell: 'Update stock', lblSellQty: 'Stock left:', btnConfirmSale: 'Confirm', toastSoldOut: '✓ {name} — sold out, lot closed', toastSoldPartial: '✓ {name} updated · {r} left · {n} sold', validationSellQty: 'Enter a valid quantity', validationSellMax: 'Cannot exceed available stock ({n})', validationSellSame: 'Stock has not changed',
+      btnSell: 'Register sale', lblSellQty: 'Units sold:', btnConfirmSale: 'Confirm', toastSoldOut: '✓ {name} — sold out, lot closed', toastSoldPartial: '✓ {n} units sold from {name} · {r} remaining', validationSellQty: 'Enter a valid quantity', validationSellMax: 'Cannot exceed available stock ({n})',
       productTypes: {
         retail_bags: { name: 'Retail Bags', desc: 'Direct sale to customer', window: 'Sell within 3 weeks of roast', hint: 'Sell within 3 weeks of roast. After 4 weeks, transfer to tin or Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'For filter — 1kg bags', window: 'Use between week 1–3 from roast', hint: 'Optimal window: 1 to 3 weeks from roast. Under 1 week → find compatible tin. After 3 weeks → use for espresso.' },
@@ -1327,8 +1254,7 @@
       sectionPipeline: 'Pipeline de Maduración', btnRegister: '+ Registrar Compra',
       colReposo: 'En Reposo', colUso: 'Disponible para Uso', colSub: 'Subproducto',
       colResoSubtitle: '3 semanas', colUsoSubtitle: '3 semanas', colSubSubtitle: 'Retirado de venta',
-      sectionHistory: 'Historial de Lotes', sectionWeeklySales: 'Ventas por Semana', weeklyNoSales: 'Sin ventas registradas esta semana.', weeklyColVariety: 'Variedad', weeklyColType: 'Tipo', weeklyColSold: 'Unidades vendidas', weeklyTotal: 'Total semana',
-      statusActivo: 'Activo', statusVencido: 'Vencido', statusEnProduccion: 'En producción', lblLifecycleStatus: 'Estado', filterAll: 'Todos', statVencidos: 'Vencidos', statEnProduccion: 'En prod.', thLifecycle: 'Estado',
+      sectionHistory: 'Historial de Lotes',
       thStrain: 'Cepa / Origen', thType: 'Tipo', thQty: 'Cantidad', thRoast: 'Roast date', thBb: 'BB date', thStage: 'Etapa', thActions: 'Acciones',
       modalAddTitle: 'Registrar Nueva Compra', lblProductType: 'Tipo de producto', lblStrainName: 'Nombre de la cepa / variedad',
       lblCountry: 'País / Origen', lblReceptionDate: 'Fecha recepción', lblRoastDate: 'Fecha de roast',
@@ -1354,7 +1280,7 @@
       backupLast: 'último backup:', backupNone: 'sin backup exportado aún',
       invalidBackup: 'El archivo no es un backup válido de Origen.', invalidFormat: 'Formato inválido',
       validationName: 'El nombre de la cepa es obligatorio', validationDates: 'Fecha de roast y BB date son obligatorios',
-      btnSell: 'Actualizar stock', lblSellQty: 'Stock restante:', btnConfirmSale: 'Confirmar', toastSoldOut: '✓ {name} — agotado, lote cerrado', toastSoldPartial: '✓ {name} actualizado · quedan {r} · vendidas {n}', validationSellQty: 'Ingresá una cantidad válida', validationSellMax: 'No puede superar el stock disponible ({n})', validationSellSame: 'El stock no cambió',
+      btnSell: 'Registrar venta', lblSellQty: 'Unidades vendidas:', btnConfirmSale: 'Confirmar', toastSoldOut: '✓ {name} — agotado, lote cerrado', toastSoldPartial: '✓ {n} unidades vendidas de {name} · quedan {r}', validationSellQty: 'Ingresá una cantidad válida', validationSellMax: 'No puede superar el stock disponible ({n})',
       productTypes: {
         retail_bags: { name: 'Retail Bags', desc: 'Venta directa al cliente', window: 'Vender dentro de 3 semanas del roast', hint: 'Vender antes de 3 semanas del roast. Si pasan 4 semanas, transferir a tin o Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Para filter — bolsas 1kg', window: 'Usar entre semana 1–3 del roast', hint: 'Ventana óptima: 1 a 3 semanas del roast. Antes de 1 semana → buscar tin con fecha compatible. Después de 3 semanas → usar para espresso.' },
@@ -1368,8 +1294,7 @@
       sectionPipeline: 'Modningstilstand', btnRegister: '+ Registrer parti',
       colReposo: 'Hviler', colUso: 'Klar til brug', colSub: 'Biprodukt',
       colResoSubtitle: '3 uger', colUsoSubtitle: '3 uger', colSubSubtitle: 'Trukket fra salg',
-      sectionHistory: 'Partihistorik', sectionWeeklySales: 'Ugentligt salg', weeklyNoSales: 'Ingen salg registreret denne uge.', weeklyColVariety: 'Sort', weeklyColType: 'Type', weeklyColSold: 'Solgte enheder', weeklyTotal: 'Ugens total',
-      statusActivo: 'Aktiv', statusVencido: 'Udløbet', statusEnProduccion: 'I produktion', lblLifecycleStatus: 'Status', filterAll: 'Alle', statVencidos: 'Udløbet', statEnProduccion: 'I prod.', thLifecycle: 'Status',
+      sectionHistory: 'Partihistorik',
       thStrain: 'Sort / Oprindelse', thType: 'Type', thQty: 'Antal', thRoast: 'Ristningsdato', thBb: 'BB dato', thStage: 'Fase', thActions: 'Handlinger',
       modalAddTitle: 'Registrer nyt parti', lblProductType: 'Produkttype', lblStrainName: 'Sort / varietetnavn',
       lblCountry: 'Land / Oprindelse', lblReceptionDate: 'Modtagelsesdato', lblRoastDate: 'Ristningsdato',
@@ -1395,7 +1320,7 @@
       backupLast: 'seneste backup:', backupNone: 'ingen backup eksporteret endnu',
       invalidBackup: 'Filen er ikke en gyldig Origen-backup.', invalidFormat: 'Ugyldigt format',
       validationName: 'Varietetnavn er påkrævet', validationDates: 'Ristningsdato og BB dato er påkrævet',
-      btnSell: 'Opdater lager', lblSellQty: 'Lager tilbage:', btnConfirmSale: 'Bekræft', toastSoldOut: '✓ {name} — udsolgt, parti lukket', toastSoldPartial: '✓ {name} opdateret · {r} tilbage · {n} solgt', validationSellQty: 'Indtast en gyldig mængde', validationSellMax: 'Kan ikke overstige tilgængeligt lager ({n})', validationSellSame: 'Lageret er ikke ændret',
+      btnSell: 'Registrer salg', lblSellQty: 'Solgte enheder:', btnConfirmSale: 'Bekræft', toastSoldOut: '✓ {name} — udsolgt, parti lukket', toastSoldPartial: '✓ {n} enheder solgt fra {name} · {r} tilbage', validationSellQty: 'Indtast en gyldig mængde', validationSellMax: 'Kan ikke overstige tilgængeligt lager ({n})',
       productTypes: {
         retail_bags: { name: 'Retail Bags', desc: 'Direkte salg til kunde', window: 'Sælg inden 3 uger fra ristning', hint: 'Sælg inden 3 uger fra ristning. Efter 4 uger, overfør til dåse eller Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Til filter — 1kg poser', window: 'Brug mellem uge 1–3 fra ristning', hint: 'Optimal vindue: 1 til 3 uger fra ristning. Under 1 uge → find kompatibel dåse. Efter 3 uger → brug til espresso.' },
@@ -1409,8 +1334,7 @@
       sectionPipeline: 'Pipeline de Maturação', btnRegister: '+ Registrar Lote',
       colReposo: 'Em Repouso', colUso: 'Disponível para Uso', colSub: 'Subproduto',
       colResoSubtitle: '3 semanas', colUsoSubtitle: '3 semanas', colSubSubtitle: 'Retirado de venda',
-      sectionHistory: 'Histórico de Lotes', sectionWeeklySales: 'Vendas por Semana', weeklyNoSales: 'Nenhuma venda registrada esta semana.', weeklyColVariety: 'Variedade', weeklyColType: 'Tipo', weeklyColSold: 'Unidades vendidas', weeklyTotal: 'Total da semana',
-      statusActivo: 'Ativo', statusVencido: 'Vencido', statusEnProduccion: 'Em produção', lblLifecycleStatus: 'Status', filterAll: 'Todos', statVencidos: 'Vencidos', statEnProduccion: 'Em prod.', thLifecycle: 'Status',
+      sectionHistory: 'Histórico de Lotes',
       thStrain: 'Variedade / Origem', thType: 'Tipo', thQty: 'Quantidade', thRoast: 'Data de torra', thBb: 'BB date', thStage: 'Etapa', thActions: 'Ações',
       modalAddTitle: 'Registrar Novo Lote', lblProductType: 'Tipo de produto', lblStrainName: 'Nome da variedade / cepa',
       lblCountry: 'País / Origem', lblReceptionDate: 'Data de recepção', lblRoastDate: 'Data de torra',
@@ -1436,7 +1360,7 @@
       backupLast: 'último backup:', backupNone: 'nenhum backup exportado ainda',
       invalidBackup: 'O arquivo não é um backup válido do Origen.', invalidFormat: 'Formato inválido',
       validationName: 'O nome da variedade é obrigatório', validationDates: 'Data de torra e BB date são obrigatórios',
-      btnSell: 'Atualizar estoque', lblSellQty: 'Estoque restante:', btnConfirmSale: 'Confirmar', toastSoldOut: '✓ {name} — esgotado, lote encerrado', toastSoldPartial: '✓ {name} atualizado · restam {r} · vendidas {n}', validationSellQty: 'Informe uma quantidade válida', validationSellMax: 'Não pode superar o estoque disponível ({n})', validationSellSame: 'O estoque não mudou',
+      btnSell: 'Registrar venda', lblSellQty: 'Unidades vendidas:', btnConfirmSale: 'Confirmar', toastSoldOut: '✓ {name} — esgotado, lote encerrado', toastSoldPartial: '✓ {n} unidades vendidas de {name} · restam {r}', validationSellQty: 'Informe uma quantidade válida', validationSellMax: 'Não pode superar o estoque disponível ({n})',
       productTypes: {
         retail_bags: { name: 'Retail Bags', desc: 'Venda direta ao cliente', window: 'Vender em até 3 semanas da torra', hint: 'Vender em até 3 semanas da torra. Após 4 semanas, transferir para lata ou Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Para filtro — sachês 1kg', window: 'Usar entre semana 1–3 da torra', hint: 'Janela ideal: 1 a 3 semanas da torra. Antes de 1 semana → buscar lata compatível. Após 3 semanas → usar para espresso.' },
@@ -1479,21 +1403,9 @@
     set('lbl-stat-aromas-bags', t('statAromasBags'));
     set('lbl-stat-aromas-tins', t('statAromasTins'));
     set('lbl-stat-seasonal', t('statSeasonal'));
-    set('lbl-stat-vencidos', t('statVencidos'));
-    set('lbl-stat-en-produccion', t('statEnProduccion'));
-    const filterEl = document.getElementById('history-lifecycle-filter');
-    if (filterEl) {
-      const curVal = filterEl.value;
-      filterEl.options[0].text = t('filterAll');
-      filterEl.options[1].text = t('statusActivo');
-      filterEl.options[2].text = t('statusVencido');
-      filterEl.options[3].text = t('statusEnProduccion');
-      filterEl.value = curVal;
-    }
     set('section-history', t('sectionHistory'));
-    set('section-weekly-sales', t('sectionWeeklySales'));
     set('th-strain', t('thStrain')); set('th-type', t('thType')); set('th-qty', t('thQty'));
-    set('th-roast', t('thRoast')); set('th-bb', t('thBb')); set('th-stage', t('thStage')); set('th-lifecycle', t('thLifecycle')); set('th-actions', t('thActions'));
+    set('th-roast', t('thRoast')); set('th-bb', t('thBb')); set('th-stage', t('thStage')); set('th-actions', t('thActions'));
     set('modal-add-title', t('modalAddTitle'));
     set('lbl-product-type', t('lblProductType')); set('lbl-strain-name', t('lblStrainName'));
     set('lbl-country', t('lblCountry')); set('lbl-reception-date', t('lblReceptionDate'));
@@ -1730,113 +1642,9 @@
   function render() {
     renderAlerts();
     renderPipeline();
-    renderWeeklySales();
     renderHistory();
     renderStats();
   }
-
-  // ── CAF-11: Lifecycle status ──────────────────────────────────────
-  // "vencido" is automatic (BB date passed); "en_produccion" is manual only
-  function getLifecycleStatus(lote) {
-    if (lote.lifecycleStatus === 'en_produccion') return 'en_produccion';
-    if (lote.bbDate && daysAgo(lote.bbDate) > 0) return 'vencido';
-    return 'activo';
-  }
-
-  // ─────────────────────────────────────────────────────────────────
-
-  // ── CAF-10: Ventas por semana ────────────────────────────────────
-  let currentWeekOffset = 0;
-
-  function getWeekStart(offset) {
-    const now = new Date();
-    const day = now.getDay();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((day + 6) % 7) + offset * 7);
-    monday.setHours(0, 0, 0, 0);
-    return monday;
-  }
-
-  function formatWeekLabel(weekStart) {
-    const end = new Date(weekStart);
-    end.setDate(end.getDate() + 6);
-    const fmt = d => d.toLocaleDateString('es', { day: '2-digit', month: 'short' });
-    return `${fmt(weekStart)} — ${fmt(end)}`;
-  }
-
-  function changeWeek(delta) {
-    currentWeekOffset += delta;
-    renderWeeklySales();
-  }
-
-  function renderWeeklySales() {
-    const weekStart = getWeekStart(currentWeekOffset);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 7);
-    const toStr = d => d.toISOString().slice(0, 10);
-    const startStr = toStr(weekStart);
-    const endStr = toStr(weekEnd);
-
-    const label = document.getElementById('weekly-range-label');
-    if (label) label.textContent = formatWeekLabel(weekStart);
-
-    const salesThisWeek = [];
-    lotes.forEach(l => {
-      if (!l.salesHistory) return;
-      l.salesHistory.forEach(s => {
-        if (s.date >= startStr && s.date < endStr) {
-          salesThisWeek.push({ name: l.name, typeName: l.typeName || l.typeId, sold: s.sold, unit: l.unit || 'u' });
-        }
-      });
-    });
-
-    const body = document.getElementById('weekly-sales-body');
-    const empty = document.getElementById('weekly-sales-empty');
-    const emptyText = document.getElementById('weekly-sales-empty-text');
-    if (!body || !empty) return;
-
-    if (salesThisWeek.length === 0) {
-      body.innerHTML = '';
-      empty.style.display = 'block';
-      if (emptyText) emptyText.textContent = t('weeklyNoSales');
-      return;
-    }
-    empty.style.display = 'none';
-
-    // Agrupar por variedad
-    const byProduct = {};
-    salesThisWeek.forEach(s => {
-      const key = `${s.name}|${s.typeName}`;
-      if (!byProduct[key]) byProduct[key] = { name: s.name, typeName: s.typeName, total: 0, unit: s.unit };
-      byProduct[key].total += s.sold;
-    });
-    const totalAll = salesThisWeek.reduce((sum, s) => sum + s.sold, 0);
-
-    body.innerHTML = `
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th>${t('weeklyColVariety')}</th>
-            <th>${t('weeklyColType')}</th>
-            <th>${t('weeklyColSold')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${Object.values(byProduct).map(p => `
-            <tr>
-              <td><strong style="color:var(--text)">${p.name}</strong></td>
-              <td style="color:var(--text-secondary)">${p.typeName}</td>
-              <td>${p.total} ${p.unit}</td>
-            </tr>
-          `).join('')}
-          <tr style="border-top:2px solid var(--border-strong)">
-            <td colspan="2" style="color:var(--text-secondary);font-size:0.82rem">${t('weeklyTotal')}</td>
-            <td><strong style="color:var(--primary)">${totalAll} u</strong></td>
-          </tr>
-        </tbody>
-      </table>`;
-  }
-  // ────────────────────────────────────────────────────────────────
 
   function renderStats() {
     const active = lotes.filter(l => getStage(l) !== 'completado');
@@ -1867,12 +1675,6 @@
     document.getElementById('stat-aromas-bags').textContent = stockByType.aromas_bags_1kg + t('unitU');
     document.getElementById('stat-aromas-tins').textContent = stockByType.aromas_tins_4kg + t('unitU');
     document.getElementById('stat-seasonal').textContent = stockByType.seasonal_tins_4kg + t('unitU');
-
-    // CAF-11: lifecycle counts (vencido is auto-detected from bbDate)
-    const vencidosCount = lotes.filter(l => getLifecycleStatus(l) === 'vencido').length;
-    const enProdCount = lotes.filter(l => getLifecycleStatus(l) === 'en_produccion').length;
-    document.getElementById('stat-vencidos').textContent = vencidosCount;
-    document.getElementById('stat-en-produccion').textContent = enProdCount;
   }
 
   function renderAlerts() {
@@ -1913,18 +1715,10 @@
     const baseDate = lote.roastDate || lote.purchaseDate;
     const remaining = getRemainingDays(lote);
     
-    // CAF-11: lifecycle badge on card
-    const cardLcs = getLifecycleStatus(lote);
-    const cardLcsBadge = cardLcs === 'vencido'
-      ? `<span class="lcs-badge lcs-vencido card-lcs-overlay">${t('statusVencido')}</span>`
-      : cardLcs === 'en_produccion'
-      ? `<span class="lcs-badge lcs-en-produccion card-lcs-overlay">${t('statusEnProduccion')}</span>`
-      : '';
-
     return `<div class="coffee-card ${isUrgent ? 'urgent' : ''}" onclick="openDetail('${lote.id}')">
       <div class="coffee-card-top">
         <div>
-          <div class="coffee-name">${lote.name}${cardLcsBadge}</div>
+          <div class="coffee-name">${lote.name}</div>
           <div class="coffee-origin">${lote.origin || '—'} ${typeName ? `· <span style="color:rgba(227,181,5,0.5)">${typeName}</span>` : ''}</div>
         </div>
         <div class="coffee-badge badge-${badgeClass}">${badgeText}</div>
@@ -1935,7 +1729,7 @@
         ${lote.bbDate ? `<div class="coffee-meta-item">${t('cardBbDate')}<span>${formatDate(lote.bbDate)}</span></div>` : ''}
       </div>
       <div class="time-bar"><div class="time-bar-fill" style="width:${progress}%"></div></div>
-      <div class="time-label"><span>${t('cardDay')} ${daysInStage} ${t('cardInStage')}</span></div>
+      <div class="time-label"><span>${t('cardDay')} ${daysInStage} ${t('cardInStage')}</span><span>${lote.supplier || ''}</span></div>
     </div>`;
   }
 
@@ -2033,41 +1827,27 @@
     }
     empty.style.display = 'none';
 
-    // CAF-11: lifecycle filter
-    const filterSel = document.getElementById('history-lifecycle-filter');
-    const filterVal = filterSel ? filterSel.value : 'all';
-
-    let filtered = [...lotes].sort((a,b) => new Date(b.roastDate || b.purchaseDate) - new Date(a.roastDate || a.purchaseDate));
-    if (filterVal !== 'all') {
-      filtered = filtered.filter(l => getLifecycleStatus(l) === filterVal);
-    }
-
-    tbody.innerHTML = filtered.map(l => {
+    const sorted = [...lotes].sort((a,b) => new Date(b.roastDate || b.purchaseDate) - new Date(a.roastDate || a.purchaseDate));
+    tbody.innerHTML = sorted.map(l => {
       const stage = getStage(l);
       const pillMap = { reposo: 'pill-reposo', uso: 'pill-uso', subproducto: 'pill-subproducto', completado: 'pill-completado' };
       const labelMap = { reposo: t('stageReposo'), uso: t('stageUso'), subproducto: t('stageSub'), completado: t('stageDone') };
       const qty = l.qty ? `${l.qty} ${l.unit || 'kg'}` : (l.kg ? `${l.kg} kg` : '—');
-
+      const icon = '';
+      
       let actionBtns = '';
       if (stage === 'reposo') actionBtns += `<button class="advance-btn to-uso" onclick="event.stopPropagation();advanceStage('${l.id}','uso')">→ ${t('stageUso')}</button>`;
       if (stage === 'uso') actionBtns += `<button class="advance-btn to-sub" onclick="event.stopPropagation();advanceStage('${l.id}','subproducto')">→ ${t('stageSub')}</button>`;
       if (stage === 'subproducto') actionBtns += `<button class="advance-btn to-done" onclick="event.stopPropagation();advanceStage('${l.id}','completado')">✓ ${t('stageDone')}</button>`;
       actionBtns += `<button class="btn-danger" onclick="event.stopPropagation();deleteLote('${l.id}')" style="padding:0.3rem 0.6rem;font-size:0.65rem">✕</button>`;
 
-      // CAF-11: lifecycle badge (vencido auto-detected)
-      const lcs = getLifecycleStatus(l);
-      let lcsBadge = '';
-      if (lcs === 'vencido') lcsBadge = `<span class="lcs-badge lcs-vencido">${t('statusVencido')}</span>`;
-      else if (lcs === 'en_produccion') lcsBadge = `<span class="lcs-badge lcs-en-produccion">${t('statusEnProduccion')}</span>`;
-
       return `<tr onclick="openDetail('${l.id}')" style="cursor:pointer">
-        <td><strong style="color:var(--text)">${l.name}</strong></td>
+        <td><strong style="color:var(--text)">${l.name}</strong>${l.origin ? `<br><span style="font-size:0.75rem;color:var(--text-muted)">${l.origin}</span>` : ''}</td>
         <td><span style="font-size:0.72rem;color:var(--text-muted)">${l.typeName || '—'}</span></td>
         <td>${qty}</td>
         <td style="font-family:'DM Mono',monospace;font-size:0.8rem">${formatDate(l.roastDate || l.purchaseDate)}</td>
         <td style="font-family:'DM Mono',monospace;font-size:0.8rem">${formatDate(l.bbDate)}</td>
         <td><span class="stage-pill ${pillMap[stage]}">${labelMap[stage]}</span></td>
-        <td>${lcsBadge}</td>
         <td class="actions-cell">${actionBtns}</td>
       </tr>`;
     }).join('');
@@ -2227,7 +2007,7 @@
     initNameSelect();
     document.getElementById('f-name-custom').value = '';
     document.getElementById('f-name-custom').style.display = 'none';
-    ['f-notes'].forEach(id => document.getElementById(id).value = '');
+    ['f-origin','f-supplier','f-notes'].forEach(id => document.getElementById(id).value = '');
     ['f-purchase-date','f-roast-date','f-bb-date','f-purchase-date-2'].forEach(id => document.getElementById(id).value = today());
     document.getElementById('f-qty').value = '';
     document.getElementById('f-unit').value = 'unidades';
@@ -2261,11 +2041,13 @@
         lotes[idx] = {
           ...lotes[idx],
           name,
+          origin: isAromas ? '' : document.getElementById('f-origin').value.trim(),
           purchaseDate,
           roastDate,
           bbDate,
           qty: document.getElementById('f-qty').value,
           unit: document.getElementById('f-unit').value,
+          supplier: document.getElementById('f-supplier').value.trim(),
           notes: document.getElementById('f-notes').value.trim(),
         };
       }
@@ -2282,12 +2064,14 @@
         typeName: selectedType.name,
         typeIcon: selectedType.icon,
         name,
+        origin: isAromas ? '' : document.getElementById('f-origin').value.trim(),
         purchaseDate,
         roastDate,
         bbDate,
         qty: document.getElementById('f-qty').value,
         unit: document.getElementById('f-unit').value,
         cost: '',
+        supplier: document.getElementById('f-supplier').value.trim(),
         notes: document.getElementById('f-notes').value.trim(),
         overstockAction: selectedType.overstockAction ? document.getElementById('f-overstock-action').value : null,
         stage: null,
@@ -2369,12 +2153,14 @@
     const customInp = document.getElementById('f-name-custom');
     customInp.value = inList ? '' : existingName;
     customInp.style.display = (!inList && existingName) ? 'block' : 'none';
+    document.getElementById('f-origin').value = l.origin || '';
     document.getElementById('f-purchase-date').value = l.purchaseDate || '';
     document.getElementById('f-purchase-date-2').value = l.purchaseDate || '';
     document.getElementById('f-roast-date').value = l.roastDate || '';
     document.getElementById('f-bb-date').value = l.bbDate || '';
     document.getElementById('f-qty').value = l.qty || '';
     document.getElementById('f-unit').value = l.unit || 'unidades';
+    document.getElementById('f-supplier').value = l.supplier || '';
     document.getElementById('f-notes').value = l.notes || '';
 
     document.getElementById('add-modal').classList.add('open');
@@ -2392,18 +2178,13 @@
   }
 
   function registerSale(id) {
-    // CAF-6: el input ahora es "stock restante", las ventas se calculan automáticamente
     const l = lotes.find(x => x.id === id);
     if (!l) return;
-    const newQty = parseFloat(document.getElementById('dm-sell-qty').value);
+    const sellQty = parseFloat(document.getElementById('dm-sell-qty').value);
     const currentQty = parseFloat(l.qty) || 0;
-    if (isNaN(newQty) || newQty < 0) { alert(t('validationSellQty')); return; }
-    if (newQty > currentQty) { alert(t('validationSellMax').replace('{n}', currentQty)); return; }
-    if (newQty === currentQty) { alert(t('validationSellSame')); return; }
-    const soldQty = currentQty - newQty; // ventas calculadas automáticamente
-    // CAF-10: registrar historial de ventas para reporte semanal
-    if (!l.salesHistory) l.salesHistory = [];
-    l.salesHistory.push({ date: today(), sold: soldQty, remaining: newQty });
+    if (!sellQty || sellQty <= 0) { alert(t('validationSellQty')); return; }
+    if (sellQty > currentQty) { alert(t('validationSellMax').replace('{n}', currentQty)); return; }
+    const newQty = currentQty - sellQty;
     if (newQty === 0) {
       // Sold out — mark as completed
       l.qty = 0;
@@ -2417,7 +2198,7 @@
       save(); render();
       toggleSellSection(false);
       openDetail(id);
-      showToast(t('toastSoldPartial').replace('{name}', l.name).replace('{r}', newQty).replace('{n}', soldQty));
+      showToast(t('toastSoldPartial').replace('{n}', sellQty).replace('{name}', l.name).replace('{r}', newQty));
     }
   }
 
@@ -2453,6 +2234,8 @@
     const type = getTypeConfig(l);
     grid.innerHTML = `
       <div class="detail-item"><label>${t('detailType')}</label><div class="detail-val">${l.typeName || '—'}</div></div>
+      <div class="detail-item"><label>${t('detailOrigin')}</label><div class="detail-val">${l.origin || '—'}</div></div>
+      <div class="detail-item"><label id="lbl-supplier"></label><div class="detail-val">${l.supplier || '—'}</div></div>
       <div class="detail-item"><label id="lbl-quantity"></label><div class="detail-val">${qty}</div></div>
       <div class="detail-item"><label>${t('detailCost')}</label><div class="detail-val">${formatCost(l.cost)}</div></div>
       <div class="detail-item"><label>${t('detailReception')}</label><div class="detail-val">${formatDate(l.purchaseDate)}</div></div>
@@ -2462,7 +2245,6 @@
     `;
 
     document.getElementById('dm-notes').textContent = l.notes || t('detailNoNotes');
-
     document.getElementById('dm-delete-btn').onclick = () => deleteLote(id);
     document.getElementById('dm-sell-btn').onclick = () => toggleSellSection(true);
     document.getElementById('dm-sell-confirm').onclick = () => registerSale(id);
@@ -2490,42 +2272,50 @@
 </html>
 
 <!-- Origen Feedback Widget -->
-<style>
-#fb-widget{position:static;width:100%;max-width:600px;margin:32px auto 48px;padding:0 20px;box-sizing:border-box;}
-#fb-card{background:#1e1e16;border:1px solid #2e2e22;border-radius:12px;overflow:hidden;}
-#fb-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;}
-#fb-bar:hover{background:#252519;}
-#fb-bar-left{display:flex;align-items:center;gap:8px;}
-#fb-bar-left svg{opacity:0.5;}
-#fb-bar span{font-size:13px;color:#aaa;letter-spacing:0.02em;}
-#fb-arrow{font-size:10px;color:#555;}
-#fb-panel{padding:0 16px 16px;display:none;}
-#fb-panel p{font-size:12px;color:#666;margin:0 0 10px;}
-#fb-input{width:100%;box-sizing:border-box;font-size:13px;padding:10px 12px;background:#141410;border:1px solid #2e2e22;border-radius:8px;color:#e8e0d0;resize:none;font-family:inherit;line-height:1.5;outline:none;}
-#fb-input:focus{border-color:#E8622A;}
-#fb-input::placeholder{color:#444;}
-#fb-send{font-size:12px;padding:7px 16px;border-radius:6px;border:1px solid #E8622A;background:transparent;color:#E8622A;cursor:pointer;margin-top:10px;float:right;transition:all 0.15s;font-family:inherit;}
-#fb-send:hover{background:#E8622A;color:#1e1e16;}
-#fb-success{display:none;text-align:center;padding:8px 0;font-size:12px;color:#666;clear:both;}
-</style>
-<div id="fb-widget">
-  <div id="fb-card">
-    <div id="fb-bar" onclick="toggleFeedback()">
-      <div id="fb-bar-left">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 2.5C1 1.67 1.67 1 2.5 1h9C12.33 1 13 1.67 13 2.5v7c0 .83-.67 1.5-1.5 1.5H9l-2 2-2-2H2.5C1.67 11 1 10.33 1 9.5v-7z" stroke="#aaa" stroke-width="1.2" fill="none"/></svg>
-        <span>Share feedback</span>
-      </div>
-      <span id="fb-arrow">▼</span>
+<div id="feedback-widget" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;font-family:sans-serif;">
+  <div style="max-width:480px;margin:0 auto;">
+    <div id="fb-bar" onclick="toggleFeedback()" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-top:1px solid #e5e5e5;cursor:pointer;">
+      <span style="font-size:13px;color:#666;">Share feedback</span>
+      <span id="fb-arrow" style="font-size:11px;color:#999;">▲</span>
     </div>
-    <div id="fb-panel">
-      <p>Un bug, algo confuso, o una feature que necesitás?</p>
-      <textarea id="fb-input" rows="3" placeholder="ej. No encuentro cómo registrar un lote nuevo..."></textarea>
-      <button id="fb-send" onclick="sendFeedback()">Enviar</button>
-      <div id="fb-success">Gracias, recibido.</div>
+    <div id="fb-panel" style="display:none;background:#fff;border-top:1px solid #e5e5e5;padding:16px;">
+      <p style="font-size:13px;color:#666;margin:0 0 10px;">Un bug, algo confuso, o una feature que necesitás?</p>
+      <textarea id="fb-input" rows="4" placeholder="ej. No encuentro cómo registrar un lote nuevo..." style="width:100%;box-sizing:border-box;font-size:13px;padding:10px;border:1px solid #ddd;border-radius:6px;resize:none;"></textarea>
+      <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+        <button onclick="sendFeedback()" style="font-size:13px;padding:7px 16px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;">Enviar</button>
+      </div>
+      <div id="fb-success" style="display:none;text-align:center;padding:8px 0;font-size:13px;color:#666;">Gracias, recibido.</div>
     </div>
   </div>
 </div>
+
 <script>
-function toggleFeedback(){const p=document.getElementById('fb-panel');const a=document.getElementById('fb-arrow');const open=p.style.display==='block';p.style.display=open?'none':'block';a.textContent=open?'▲':'▼';}
-async function sendFeedback(){const val=document.getElementById('fb-input').value.trim();if(!val)return;await fetch('https://n8n-production-3051b.up.railway.app/webhook/origen-feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:val,user_id:'operator',context:window.location.pathname})});document.getElementById('fb-input').value='';document.getElementById('fb-success').style.display='block';setTimeout(()=>{document.getElementById('fb-panel').style.display='none';document.getElementById('fb-success').style.display='none';document.getElementById('fb-arrow').textContent='▼';},2500);}
+function toggleFeedback() {
+  const panel = document.getElementById('fb-panel');
+  const arrow = document.getElementById('fb-arrow');
+  const open = panel.style.display === 'block';
+  panel.style.display = open ? 'none' : 'block';
+  arrow.textContent = open ? '▲' : '▼';
+}
+
+async function sendFeedback() {
+  const val = document.getElementById('fb-input').value.trim();
+  if (!val) return;
+  await fetch('https://n8n-production-3051b.up.railway.app/webhook/origen-feedback', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      message: val,
+      user_id: 'operator',
+      context: window.location.pathname
+    })
+  });
+  document.getElementById('fb-input').value = '';
+  document.getElementById('fb-success').style.display = 'block';
+  setTimeout(() => {
+    document.getElementById('fb-panel').style.display = 'none';
+    document.getElementById('fb-success').style.display = 'none';
+    document.getElementById('fb-arrow').textContent = '▲';
+  }, 2500);
+}
 </script>
