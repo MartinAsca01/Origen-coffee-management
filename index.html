@@ -2486,6 +2486,20 @@
   render();
   updateBackupLabel();
 </script>
+<!-- Fix applied: In the JavaScript section, within the initializeLotFilters() function or wherever lot table filter event handlers are defined -->
+<script>
+document.querySelectorAll('.lot-filter').forEach(filter => {
+  filter.addEventListener('click', function(e) {
+    e.preventDefault();
+    const filterType = this.dataset.filter;
+    const filterValue = this.dataset.value;
+    applyLotFilter(filterType, filterValue);
+    // Update active filter styling
+    document.querySelectorAll('.lot-filter').forEach(f => f.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
 </body>
 </html>
 
