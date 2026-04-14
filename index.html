@@ -2486,6 +2486,38 @@
   render();
   updateBackupLabel();
 </script>
+<!-- Fix applied: In the JavaScript section, add event listener for the save button in the lot form, typically after DOM content loaded or in the form initialization function -->
+<script>
+document.getElementById('saveLotBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const form = document.getElementById('newLotForm');
+  const formData = new FormData(form);
+  
+  // Validate required fields
+  if (!formData.get('lotName') || !formData.get('origin') || !formData.get('quantity')) {
+    alert('Por favor complete todos los campos requeridos');
+    return;
+  }
+  
+  // Save lot data (localStorage or API call)
+  const lotData = {
+    id: Date.now(),
+    name: formData.get('lotName'),
+    origin: formData.get('origin'),
+    quantity: formData.get('quantity'),
+    dateAdded: new Date().toISOString()
+  };
+  
+  // Save to localStorage or send to API
+  let lots = JSON.parse(localStorage.getItem('coffeeLots') || '[]');
+  lots.push(lotData);
+  localStorage.setItem('coffeeLots', JSON.stringify(lots));
+  
+  // Reset form and close modal/redirect
+  form.reset();
+  alert('Lote guardado exitosamente');
+});
+</script>
 </body>
 </html>
 
