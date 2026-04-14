@@ -2486,6 +2486,17 @@
   render();
   updateBackupLabel();
 </script>
+<!-- Fix applied: In the price display function or wherever lot prices are formatted for display, typically in a formatPrice() function or price rendering section -->
+<script>
+function formatPrice(price) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(parseFloat(price) || 0);
+}
+</script>
 </body>
 </html>
 
