@@ -2486,6 +2486,35 @@
   render();
   updateBackupLabel();
 </script>
+<!-- Fix applied: Replace the existing loadLotsTable() function or similar table rendering function in the JavaScript section -->
+<script>
+function loadLotsTable(page = 1, limit = 50) {
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedLots = allLots.slice(startIndex, endIndex);
+  
+  const tbody = document.querySelector('#lots-table tbody');
+  tbody.innerHTML = '';
+  
+  // Use DocumentFragment for better performance
+  const fragment = document.createDocumentFragment();
+  
+  paginatedLots.forEach(lot => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${lot.id}</td>
+      <td>${lot.name}</td>
+      <td>${lot.quantity}</td>
+      <td>${lot.origin}</td>
+      <td>${lot.roastDate}</td>
+    `;
+    fragment.appendChild(row);
+  });
+  
+  tbody.appendChild(fragment);
+  updatePagination(page, Math.ceil(allLots.length / limit));
+}
+</script>
 </body>
 </html>
 
