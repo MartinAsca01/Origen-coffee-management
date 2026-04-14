@@ -2486,6 +2486,27 @@
   render();
   updateBackupLabel();
 </script>
+<!-- Fix applied: In the recordSale() or updateStock() function within the <script> section, specifically where inventory quantities are decremented and displayed -->
+<script>
+function recordSale(productId, quantitySold) {
+    const product = inventory.find(item => item.id === productId);
+    if (product && product.stock >= quantitySold) {
+        product.stock -= quantitySold;
+        updateProductDisplay(productId);
+        saveInventoryToLocalStorage();
+        return true;
+    }
+    return false;
+}
+
+function updateProductDisplay(productId) {
+    const stockElement = document.querySelector(`[data-product-id="${productId}"] .stock-level`);
+    const product = inventory.find(item => item.id === productId);
+    if (stockElement && product) {
+        stockElement.textContent = product.stock;
+    }
+}
+</script>
 </body>
 </html>
 
