@@ -2486,6 +2486,28 @@
   render();
   updateBackupLabel();
 </script>
+<!-- Fix applied: In the JavaScript section, within the lot management form handler or the saveLot function, typically near the bottom of the HTML file before the closing </script> tag -->
+<script>
+document.getElementById('saveLotBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const form = document.getElementById('newLotForm');
+  if (form.checkValidity()) {
+    const formData = new FormData(form);
+    const lotData = {
+      id: Date.now(),
+      name: formData.get('lotName'),
+      origin: formData.get('origin'),
+      quantity: parseInt(formData.get('quantity')),
+      roastDate: formData.get('roastDate'),
+      price: parseFloat(formData.get('price'))
+    };
+    saveLotToStorage(lotData);
+    form.reset();
+    updateLotDisplay();
+    closeModal('newLotModal');
+  }
+});
+</script>
 </body>
 </html>
 
