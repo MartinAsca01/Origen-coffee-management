@@ -2486,6 +2486,22 @@
   render();
   updateBackupLabel();
 </script>
+<!-- Fix applied: In the recordSale() or processSale() function, after the sale is validated but before the success confirmation -->
+<script>
+// Add this after sale validation and before success message
+function recordSale(productId, quantitySold) {
+  // ... existing sale validation code ...
+  
+  // Update inventory stock
+  const product = inventory.find(item => item.id === productId);
+  if (product && product.stock >= quantitySold) {
+    product.stock -= quantitySold;
+    updateInventoryDisplay();
+    saveSaleRecord(productId, quantitySold);
+    showSuccessMessage('Sale recorded successfully');
+  }
+}
+</script>
 </body>
 </html>
 
