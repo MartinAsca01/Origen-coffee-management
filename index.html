@@ -1961,7 +1961,7 @@
   function makeGroupCard(group, colClass) {
     if (group.length === 1) return makeCoffeeCard(group[0], colClass);
     const first = group[0];
-    const groupId = 'grp-' + first.typeId;
+    const groupId = 'grp-' + colClass + '-' + first.typeId;
     const summaryBadge = makeGroupSummaryBadge(group);
     const typeName = first.typeName || first.typeId;
     const grainNames = [...new Set(group.map(l => l.name))].slice(0, 3).join(', ');
