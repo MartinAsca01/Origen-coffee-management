@@ -2492,6 +2492,30 @@
 <label for="quantity">Cantidad</label>
 <input type="number" id="quantity" name="quantity" placeholder="Ingrese cantidad">
 </script>
+<!-- Fix applied: In the product registration form section where the variety dropdown is defined, or in the language switching function that updates UI text -->
+<script>
+// Add to language switching function or dropdown initialization
+function updateVarietyDropdown() {
+  const varietySelect = document.getElementById('variety-select');
+  const currentLang = getCurrentLanguage();
+  
+  if (currentLang === 'en') {
+    varietySelect.innerHTML = `
+      <option value="">Select variety...</option>
+      <option value="arabica">Arabica</option>
+      <option value="robusta">Robusta</option>
+      <option value="others">Others</option>
+    `;
+  } else {
+    varietySelect.innerHTML = `
+      <option value="">Seleccionar variedad...</option>
+      <option value="arabica">Arábica</option>
+      <option value="robusta">Robusta</option>
+      <option value="others">Otros</option>
+    `;
+  }
+}
+</script>
 </body>
 </html>
 
