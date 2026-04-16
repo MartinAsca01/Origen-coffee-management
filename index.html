@@ -1294,6 +1294,7 @@
       lblBbDate: 'Best Before (BB date)', lblQuantity: 'Quantity', lblSupplier: 'Supplier',
       lblTastingNotes: 'Tasting notes', lblOverstock: 'Action if overstock',
       optAdjustOrder: 'Adjust weekly order', optEspresso: 'Use for espresso', optContact: 'Contact supplier', optUnits: 'Units',
+      selectVarietyPlaceholder: 'Select variety...', optOther: '— Other (type name) —',
       btnBack: '← Back', btnCancel: 'Cancel', btnRegisterLot: 'Register Lot', btnRegisterIngreso: 'Register Intake',
       btnSaveChanges: 'Save changes', btnDeleteLot: 'Delete lot', btnEdit: 'Edit', btnClose: 'Close',
       emptyHistory: 'No lots registered yet', emptyReposo: 'No lots resting', emptyUso: 'No lots available', emptySub: 'No lots as by-product',
@@ -1335,6 +1336,7 @@
       lblBbDate: 'Best Before (BB date)', lblQuantity: 'Cantidad', lblSupplier: 'Proveedor',
       lblTastingNotes: 'Notas de cata', lblOverstock: 'Acción si hay overstock',
       optAdjustOrder: 'Ajustar orden semanal', optEspresso: 'Usar para espresso', optContact: 'Contactar proveedor', optUnits: 'Unidades',
+      selectVarietyPlaceholder: 'Seleccionar variedad...', optOther: '— Otro (escribir) —',
       btnBack: '← Atrás', btnCancel: 'Cancelar', btnRegisterLot: 'Registrar Lote', btnRegisterIngreso: 'Registrar ingreso',
       btnSaveChanges: 'Guardar cambios', btnDeleteLot: 'Eliminar lote', btnEdit: 'Editar', btnClose: 'Cerrar',
       emptyHistory: 'Aún no hay lotes registrados', emptyReposo: 'Sin lotes en reposo', emptyUso: 'Sin lotes disponibles', emptySub: 'Sin lotes en subproducto',
@@ -1376,6 +1378,7 @@
       lblBbDate: 'Bedst før (BB dato)', lblQuantity: 'Antal', lblSupplier: 'Leverandør',
       lblTastingNotes: 'Smagnoter', lblOverstock: 'Handling ved overskud',
       optAdjustOrder: 'Juster ugentlig ordre', optEspresso: 'Brug til espresso', optContact: 'Kontakt leverandør', optUnits: 'Enheder',
+      selectVarietyPlaceholder: 'Vælg sort...', optOther: '— Andet (skriv navn) —',
       btnBack: '← Tilbage', btnCancel: 'Annuller', btnRegisterLot: 'Registrer parti', btnRegisterIngreso: 'Registrer modtagelse',
       btnSaveChanges: 'Gem ændringer', btnDeleteLot: 'Slet parti', btnEdit: 'Rediger', btnClose: 'Luk',
       emptyHistory: 'Ingen partier registreret endnu', emptyReposo: 'Ingen partier hviler', emptyUso: 'Ingen tilgængelige partier', emptySub: 'Ingen partier som biprodukt',
@@ -1417,6 +1420,7 @@
       lblBbDate: 'Validade (BB date)', lblQuantity: 'Quantidade', lblSupplier: 'Fornecedor',
       lblTastingNotes: 'Notas de degustação', lblOverstock: 'Ação em caso de excesso',
       optAdjustOrder: 'Ajustar pedido semanal', optEspresso: 'Usar para espresso', optContact: 'Contatar fornecedor', optUnits: 'Unidades',
+      selectVarietyPlaceholder: 'Selecionar variedade...', optOther: '— Outro (escrever) —',
       btnBack: '← Voltar', btnCancel: 'Cancelar', btnRegisterLot: 'Registrar Lote', btnRegisterIngreso: 'Registrar entrada',
       btnSaveChanges: 'Salvar alterações', btnDeleteLot: 'Excluir lote', btnEdit: 'Editar', btnClose: 'Fechar',
       emptyHistory: 'Nenhum lote registrado ainda', emptyReposo: 'Sem lotes em repouso', emptyUso: 'Sem lotes disponíveis', emptySub: 'Sem lotes como subproduto',
@@ -2141,9 +2145,9 @@
   function initNameSelect() {
     const sel = document.getElementById('f-name');
     sel.innerHTML =
-      `<option value="" disabled id="opt-name-placeholder">Seleccionar variedad...</option>` +
+      `<option value="" disabled id="opt-name-placeholder">${t('selectVarietyPlaceholder')}</option>` +
       COFFEE_VARIETIES.map(v => `<option value="${v}">${v}</option>`).join('') +
-      `<option value="__other__">— Otro (escribir) —</option>`;
+      `<option value="__other__">${t('optOther')}</option>`;
     sel.value = '';
   }
 
