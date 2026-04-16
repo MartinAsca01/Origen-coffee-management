@@ -1045,14 +1045,6 @@
         <span class="stat-val" id="stat-seasonal">0</span>
         <span class="stat-lbl" id="lbl-stat-seasonal"></span>
       </div>
-      <div class="stat stat-divider">
-        <span class="stat-val" id="stat-vencidos" style="color:#b02020">0</span>
-        <span class="stat-lbl" id="lbl-stat-vencidos"></span>
-      </div>
-      <div class="stat">
-        <span class="stat-val" id="stat-en-produccion" style="color:#2a4ea8">0</span>
-        <span class="stat-lbl" id="lbl-stat-en-produccion"></span>
-      </div>
     </div>
     <select id="lang-selector" onchange="setLang(this.value)" style="background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;font-size:0.75rem;cursor:pointer;font-family:'Inter',sans-serif">
       <option value="en">🇬🇧 EN</option>
@@ -1483,8 +1475,6 @@
     set('lbl-stat-aromas-bags', t('statAromasBags'));
     set('lbl-stat-aromas-tins', t('statAromasTins'));
     set('lbl-stat-seasonal', t('statSeasonal'));
-    set('lbl-stat-vencidos', t('statVencidos'));
-    set('lbl-stat-en-produccion', t('statEnProduccion'));
     const filterEl = document.getElementById('history-lifecycle-filter');
     if (filterEl) {
       const curVal = filterEl.value;
@@ -1872,12 +1862,6 @@
     document.getElementById('stat-aromas-bags').textContent = stockByType.aromas_bags_1kg + t('unitU');
     document.getElementById('stat-aromas-tins').textContent = stockByType.aromas_tins_4kg + t('unitU');
     document.getElementById('stat-seasonal').textContent = stockByType.seasonal_tins_4kg + t('unitU');
-
-    // CAF-11: lifecycle counts (vencido is auto-detected from bbDate)
-    const vencidosCount = lotes.filter(l => getLifecycleStatus(l) === 'vencido').length;
-    const enProdCount = lotes.filter(l => getLifecycleStatus(l) === 'en_produccion').length;
-    document.getElementById('stat-vencidos').textContent = vencidosCount;
-    document.getElementById('stat-en-produccion').textContent = enProdCount;
   }
 
   function renderAlerts() {
