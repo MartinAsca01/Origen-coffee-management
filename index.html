@@ -1318,7 +1318,7 @@
         retail_bags: { name: 'Retail Bags', desc: 'Direct sale to customer', window: 'Sell within 3 weeks of roast', hint: 'Sell within 3 weeks of roast. After 4 weeks, transfer to tin or Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'For filter — 1kg bags', window: 'Use between week 1–3 from roast', hint: 'Optimal window: 1 to 3 weeks from roast. Under 1 week → find compatible tin. After 3 weeks → use for espresso.' },
         aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'For espresso — 4kg tins', window: 'Use from week 3 until BB date', hint: 'Do not use before 3 weeks from roast. Usage window: from week 3 until BB date. If approaching BB date → contact for recipe adjustment.' },
-        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Seasonal use — flexible', window: 'Use until BB date — flexible rest', hint: 'Flexible rest due to irregular use. Use until BB date with no fixed rest window.' }
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Seasonal use — 3 week rest', window: 'Use from week 3 until BB date', hint: 'Do not use before 3 weeks from roast. Usage window: from week 3 until BB date.' }
       }
     },
     es: {
@@ -1359,7 +1359,7 @@
         retail_bags: { name: 'Retail Bags', desc: 'Venta directa al cliente', window: 'Vender dentro de 3 semanas del roast', hint: 'Vender antes de 3 semanas del roast. Si pasan 4 semanas, transferir a tin o Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Para filter — bolsas 1kg', window: 'Usar entre semana 1–3 del roast', hint: 'Ventana óptima: 1 a 3 semanas del roast. Antes de 1 semana → buscar tin con fecha compatible. Después de 3 semanas → usar para espresso.' },
         aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'Para espresso — tins 4kg', window: 'Usar desde semana 3 hasta BB date', hint: 'No usar antes de 3 semanas del roast. Ventana de uso: desde semana 3 hasta BB date. Si se acerca BB date → contactar para ajuste de receta.' },
-        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Uso estacional — flexible', window: 'Usar hasta BB date — reposo flexible', hint: 'Reposo flexible por uso irregular. Usar hasta BB date sin ventana fija de reposo.' }
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Uso estacional — reposo 3 semanas', window: 'Usar desde semana 3 hasta BB date', hint: 'No usar antes de 3 semanas del roast. Ventana de uso: desde semana 3 hasta BB date.' }
       }
     },
     da: {
@@ -1400,7 +1400,7 @@
         retail_bags: { name: 'Retail Bags', desc: 'Direkte salg til kunde', window: 'Sælg inden 3 uger fra ristning', hint: 'Sælg inden 3 uger fra ristning. Efter 4 uger, overfør til dåse eller Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Til filter — 1kg poser', window: 'Brug mellem uge 1–3 fra ristning', hint: 'Optimal vindue: 1 til 3 uger fra ristning. Under 1 uge → find kompatibel dåse. Efter 3 uger → brug til espresso.' },
         aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'Til espresso — 4kg dåser', window: 'Brug fra uge 3 til BB dato', hint: 'Brug ikke før 3 uger fra ristning. Brugsvindue: fra uge 3 til BB dato. Nærmer BB dato sig → kontakt for receptjustering.' },
-        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Sæsonbrug — fleksibelt', window: 'Brug til BB dato — fleksibel hvile', hint: 'Fleksibel hvile pga. uregelmæssigt forbrug. Brug til BB dato uden fast hvilevindue.' }
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Sæsonbrug — 3 ugers hvile', window: 'Brug fra uge 3 til BB dato', hint: 'Brug ikke før 3 uger fra ristning. Brugsvindue: fra uge 3 til BB dato.' }
       }
     },
     pt: {
@@ -1441,7 +1441,7 @@
         retail_bags: { name: 'Retail Bags', desc: 'Venda direta ao cliente', window: 'Vender em até 3 semanas da torra', hint: 'Vender em até 3 semanas da torra. Após 4 semanas, transferir para lata ou Condibox.' },
         aromas_bags_1kg: { name: '1kg Aromas Bags', desc: 'Para filtro — sachês 1kg', window: 'Usar entre semana 1–3 da torra', hint: 'Janela ideal: 1 a 3 semanas da torra. Antes de 1 semana → buscar lata compatível. Após 3 semanas → usar para espresso.' },
         aromas_tins_4kg: { name: '4kg Aromas Tins', desc: 'Para espresso — latas 4kg', window: 'Usar da semana 3 até BB date', hint: 'Não usar antes de 3 semanas da torra. Janela de uso: da semana 3 até BB date. Se aproximando do BB date → contatar para ajuste de receita.' },
-        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Uso sazonal — flexível', window: 'Usar até BB date — repouso flexível', hint: 'Repouso flexível por uso irregular. Usar até BB date sem janela fixa de repouso.' }
+        seasonal_tins_4kg: { name: '4kg Seasonal Tins', desc: 'Uso sazonal — repouso 3 semanas', window: 'Usar da semana 3 até BB date', hint: 'Não usar antes de 3 semanas da torra. Janela de uso: da semana 3 até BB date.' }
       }
     }
   };
@@ -1783,6 +1783,7 @@
     const salesThisWeek = [];
     lotes.forEach(l => {
       if (!l.salesHistory) return;
+      if (l.typeId !== 'retail_bags') return;
       l.salesHistory.forEach(s => {
         if (s.date >= startStr && s.date < endStr) {
           salesThisWeek.push({ name: l.name, typeName: l.typeName || l.typeId, sold: s.sold, unit: l.unit || 'u' });
@@ -2121,11 +2122,11 @@
       desc: 'Uso estacional — flexible',
       unit: 'kg',
       unitLabel: 'Cantidad (kg)',
-      restWeeks: 0,
+      restWeeks: 3,
       useWeeks: null, // uses BB date
-      window: 'Usar hasta BB date — reposo flexible',
+      window: 'Usar desde semana 3 hasta BB date',
       overstockAction: false,
-      hint: 'Reposo flexible por uso irregular. Usar hasta BB date sin ventana fija de reposo.'
+      hint: 'No usar antes de 3 semanas del roast. Ventana de uso: desde semana 3 hasta BB date.'
     }
   ];
 
