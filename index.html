@@ -1849,12 +1849,12 @@
     alertEl.style.color = '';
     alertEl.classList.toggle('has-alert', alertCount > 0);
 
-    // Stock by product type — count of active lots
+    // Stock by product type — lots in reposo or uso with qty > 0
     const stockByType = { retail_bags: 0, aromas_bags_1kg: 0, aromas_tins_4kg: 0, seasonal_tins_4kg: 0 };
     lotes.forEach(l => {
       const stage = getStage(l);
+      if (stage !== 'reposo' && stage !== 'uso') return;
       const qty = parseFloat(l.qty) || 0;
-      if (stage === 'completado' || stage === 'subproducto') return;
       if (qty <= 0) return;
       if (stockByType.hasOwnProperty(l.typeId)) stockByType[l.typeId] += qty;
     });
